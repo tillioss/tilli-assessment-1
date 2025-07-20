@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom theme colors */
+:root {
+  --primary-color: #4f86e2;
+  --primary-light: #e1ecff;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-[#4F86E2] text-white px-6 py-3 rounded-full hover:bg-[#3d6bc7] transition-colors font-medium;
+}
+
+.btn-secondary {
+  @apply bg-[#E1ECFF] text-[#4F86E2] px-6 py-3 rounded-full hover:bg-[#c5d9ff] transition-colors font-medium;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors font-medium;
+}
+
+.btn-success {
+  @apply bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors font-medium;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: "Montserrat", sans-serif;
+}
+
+* {
+  font-family: "Montserrat", sans-serif;
+}
