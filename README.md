@@ -109,13 +109,12 @@ tilli-assessment-1/
      - `createdAt` (datetime)
      - `updatedAt` (datetime)
 
-5. **Enable Mobile Authentication**
+5. **Enable Anonymous Authentication**
 
    In your Appwrite project:
 
    - Go to Auth > Settings
-   - Enable Phone authentication
-   - Configure SMS provider (Twilio, etc.)
+   - Enable Anonymous authentication
 
 6. **Run the development server**
 
@@ -152,21 +151,20 @@ The application is built with a mobile-first responsive design approach:
 - **Touch-Friendly Forms**: Larger touch targets and optimized input fields
 - **Mobile Photo Upload**: Drag & drop optimized for mobile devices
 - **Responsive Cards**: Student assessment cards that adapt to screen size
-- **Mobile Authentication**: Phone number input optimized for mobile keyboards
+- **Simple Authentication**: One-click anonymous authentication
 
 ## Authentication
 
-### Mobile Authentication Flow
+### Simple Authentication Flow
 
-1. **Phone Number Input**: User enters their phone number
-2. **OTP Request**: Appwrite sends SMS with verification code
-3. **OTP Verification**: User enters the 6-digit code
-4. **Session Creation**: User is authenticated and redirected to dashboard
+1. **Get Started**: User clicks the "Get Started" button
+2. **Anonymous Session**: Appwrite creates an anonymous session
+3. **Session Creation**: User is authenticated and redirected to dashboard
 
 ### Authentication Components
 
 - **AuthProvider**: Manages authentication state across the app
-- **LoginForm**: Mobile-optimized authentication form
+- **LoginForm**: Simple authentication form with single button
 - **ProtectedRoute**: Protects routes from unauthenticated access
 
 ### Authentication States
@@ -179,9 +177,9 @@ The application is built with a mobile-first responsive design approach:
 
 ### Authentication
 
-- Real SMS verification required
-- Mobile-optimized phone number input
-- Touch-friendly OTP entry
+- Simple one-click authentication
+- No phone number or SMS required
+- Anonymous sessions for easy access
 
 ### Photo Upload
 

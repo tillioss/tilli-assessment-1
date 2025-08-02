@@ -12,8 +12,7 @@ import { AuthService, AuthUser } from "@/lib/auth";
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
-  login: (phone: string) => Promise<void>;
-  verifyOTP: (userId: string, secret: string) => Promise<void>;
+  login: () => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -43,34 +42,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (phone: string) => {
+  const login = async () => {
     try {
       setIsLoading(true);
-      await AuthService.createPhoneSession(phone);
-      // Store phone number for OTP verification
-      localStorage.setItem("pendingPhone", phone);
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      await AuthService.createAnonymousSession();
 
-  const verifyOTP = async (userId: string, secret: string) => {
-    try {
-      setIsLoading(true);
-      await AuthService.updatePhoneSession(userId, secret);
-
-      // Get user details after successful verification
+      // Get user details after successful login
       const currentUser = await AuthService.getCurrentUser();
       if (currentUser) {
         setUser(currentUser);
         setIsAuthenticated(true);
-        localStorage.removeItem("pendingPhone");
       }
     } catch (error) {
-      console.error("OTP verification error:", error);
+      console.error("Login error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -82,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AuthService.logout();
       setUser(null);
       setIsAuthenticated(false);
-      localStorage.removeItem("pendingPhone");
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
@@ -93,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isLoading,
     login,
-    verifyOTP,
     logout,
     isAuthenticated,
   };

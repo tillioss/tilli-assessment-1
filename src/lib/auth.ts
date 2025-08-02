@@ -4,28 +4,15 @@ import { ID } from "appwrite";
 export interface AuthUser {
   $id: string;
   name?: string;
-  phone?: string;
   email?: string;
 }
 
 export class AuthService {
-  static async createPhoneSession(phone: string): Promise<void> {
+  static async createAnonymousSession(): Promise<void> {
     try {
-      await account.createPhoneSession(ID.unique(), phone);
+      await account.createAnonymousSession();
     } catch (error) {
-      console.error("Error creating phone session:", error);
-      throw error;
-    }
-  }
-
-  static async updatePhoneSession(
-    userId: string,
-    secret: string
-  ): Promise<void> {
-    try {
-      await account.updatePhoneSession(userId, secret);
-    } catch (error) {
-      console.error("Error updating phone session:", error);
+      console.error("Error creating anonymous session:", error);
       throw error;
     }
   }
@@ -36,7 +23,6 @@ export class AuthService {
       return {
         $id: user.$id,
         name: user.name,
-        phone: user.phone,
         email: user.email,
       };
     } catch (error) {
