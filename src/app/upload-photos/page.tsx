@@ -54,6 +54,8 @@ function UploadPhotosContent() {
   const [showCamera, setShowCamera] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [cameraError, setCameraError] = useState<string>("");
+  const [isCameraLoading, setIsCameraLoading] = useState(false);
+  const [captureFeedback, setCaptureFeedback] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [expandedStudents, setExpandedStudents] = useState<Set<string>>(
@@ -176,6 +178,14 @@ function UploadPhotosContent() {
     };
   }, [cameraStream]);
 
+  // Ensure video element is properly set up when camera is shown
+  useEffect(() => {
+    if (showCamera && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.play().catch(console.error);
+    }
+  }, [showCamera, cameraStream]);
+
   const removeFile = (id: string) => {
     setUploadedFiles((prev) => {
       const fileToRemove = prev.find((f) => f.id === id);
@@ -190,23 +200,42 @@ function UploadPhotosContent() {
   const startCamera = async () => {
     try {
       setCameraError("");
+      setIsCameraLoading(true);
+      setShowCamera(true);
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment", // Use back camera on mobile
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
         },
       });
 
       setCameraStream(stream);
-      setShowCamera(true);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        await videoRef.current.play();
       }
+
+      setIsCameraLoading(false);
     } catch (error) {
       console.error("Camera error:", error);
-      setCameraError("Unable to access camera. Please check permissions.");
+      setShowCamera(false);
+      setIsCameraLoading(false);
+      if (error instanceof Error) {
+        if (error.name === "NotAllowedError") {
+          setCameraError(
+            "Camera access denied. Please allow camera permissions."
+          );
+        } else if (error.name === "NotFoundError") {
+          setCameraError("No camera found on this device.");
+        } else {
+          setCameraError("Unable to access camera. Please check permissions.");
+        }
+      } else {
+        setCameraError("Unable to access camera. Please check permissions.");
+      }
     }
   };
 
@@ -248,7 +277,12 @@ function UploadPhotosContent() {
               };
 
               setUploadedFiles((prev) => [...prev, newFile]);
-              stopCamera();
+
+              // Show success feedback using React state
+              setCaptureFeedback(true);
+              setTimeout(() => {
+                setCaptureFeedback(false);
+              }, 1000);
             }
           },
           "image/jpeg",
@@ -514,14 +548,46 @@ function UploadPhotosContent() {
               {/* Camera Interface */}
               {showCamera && (
                 <div className="mb-6 p-4 bg-gray-900 rounded-lg">
+                  {/* Photo Counter */}
+                  <div className="text-center mb-4">
+                    <div className="inline-flex items-center space-x-2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full">
+                      <span className="text-sm">📸</span>
+                      <span className="text-sm font-medium">
+                        {uploadedFiles.length} Photo
+                        {uploadedFiles.length !== 1 ? "s" : ""} Captured
+                      </span>
+                    </div>
+                    {uploadedFiles.length === 0 && (
+                      <p className="text-white text-xs mt-2 opacity-75">
+                        Take photos of each rubric sheet. You can capture
+                        multiple photos.
+                      </p>
+                    )}
+                  </div>
                   <div className="relative">
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      className="w-full h-64 sm:h-96 object-cover rounded-lg"
-                    />
+                    {isCameraLoading ? (
+                      <div className="w-full h-64 sm:h-96 bg-gray-800 rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                          <p className="text-white text-sm">
+                            Starting camera...
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="w-full h-64 sm:h-96 object-cover rounded-lg"
+                        onLoadedMetadata={() => {
+                          if (videoRef.current) {
+                            videoRef.current.play().catch(console.error);
+                          }
+                        }}
+                      />
+                    )}
                     <canvas ref={canvasRef} className="hidden" />
                     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
                       <button
@@ -532,16 +598,41 @@ function UploadPhotosContent() {
                       </button>
                       <button
                         onClick={capturePhoto}
-                        className="bg-[#4F86E2] text-white px-6 py-2 rounded-full hover:bg-[#3d6bc7] transition-colors"
+                        disabled={isCameraLoading}
+                        className={`px-6 py-2 rounded-full transition-colors ${
+                          captureFeedback
+                            ? "bg-green-500 text-white"
+                            : "bg-[#4F86E2] text-white hover:bg-[#3d6bc7] disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        }`}
                       >
-                        Capture
+                        {isCameraLoading
+                          ? "Loading..."
+                          : captureFeedback
+                          ? "Photo Captured!"
+                          : "Capture"}
+                      </button>
+                      <button
+                        onClick={stopCamera}
+                        className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition-colors"
+                      >
+                        Done ({uploadedFiles.length})
                       </button>
                     </div>
                   </div>
                   {cameraError && (
-                    <p className="text-red-500 text-sm mt-2 text-center">
-                      {cameraError}
-                    </p>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                      <p className="text-red-700 text-sm text-center mb-2">
+                        {cameraError}
+                      </p>
+                      <div className="text-center">
+                        <button
+                          onClick={() => setShowCamera(false)}
+                          className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors text-sm"
+                        >
+                          Close Camera
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
