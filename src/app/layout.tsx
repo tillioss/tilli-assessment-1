@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { NavbarProvider } from "@/components/NavbarContext";
-import Navbar from "@/components/Navbar";
+import ConditionalNavbar from "@/components/ConditionalNavbar";
 
 export const metadata: Metadata = {
   title: "Tilli Assessment App",
@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className="font-sans">
         <AuthProvider>
           <NavbarProvider>
-            <Navbar />
+            <ConditionalNavbar />
             <div className="min-h-screen bg-gray-50">{children}</div>
           </NavbarProvider>
         </AuthProvider>

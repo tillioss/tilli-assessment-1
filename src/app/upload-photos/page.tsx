@@ -4,10 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import {
-  Upload,
   X,
   Camera,
-  ArrowLeft,
   Smartphone,
   Image,
   CheckCircle,
@@ -17,10 +15,10 @@ import {
   Clock,
   Sparkles,
 } from "lucide-react";
-import Link from "next/link";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { useNavbar } from "@/components/NavbarContext";
+import { useAuth } from "@/components/AuthProvider";
 import { getRandomEmoji } from "@/lib/emoji-assignment";
+import StarRating from "@/components/StarRating";
 
 interface UploadedFile {
   file: File;
@@ -49,6 +47,7 @@ interface ScanResult {
 
 function UploadPhotosContent() {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -65,46 +64,37 @@ function UploadPhotosContent() {
   const [loadingMessage, setLoadingMessage] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [teacherInfo, setTeacherInfo] = useState({
+
+  const teacherInfo = user?.teacherInfo || {
     teacherName: "",
     school: "",
     grade: "",
     section: "",
-  });
+  };
 
-  // Predefined options for dropdowns
-  const schoolOptions = [
-    "Springfield Elementary School",
-    "Lincoln Middle School",
-    "Washington High School",
-    "Riverside Academy",
-    "Oakwood Primary School",
-    "Maple Street Elementary",
-    "Central Middle School",
-    "Eastside High School",
-    "Westfield Academy",
-    "Northside Elementary",
-    "Southside Middle School",
-    "Other (Please specify)",
-  ];
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, isLoading, router]);
 
-  const gradeOptions = [
-    "Kindergarten",
-    "1st Grade",
-    "2nd Grade",
-    "3rd Grade",
-    "4th Grade",
-    "5th Grade",
-    "6th Grade",
-    "7th Grade",
-    "8th Grade",
-    "9th Grade",
-    "10th Grade",
-    "11th Grade",
-    "12th Grade",
-  ];
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-lg">
+          <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600 mt-4 text-center">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const sectionOptions = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+  // Don't render anything if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const { setBackButton, hideBackButton } = useNavbar();
 
@@ -293,16 +283,6 @@ function UploadPhotosContent() {
   };
 
   const handleSubmit = async () => {
-    if (
-      !teacherInfo.teacherName ||
-      !teacherInfo.school ||
-      !teacherInfo.grade ||
-      !teacherInfo.section
-    ) {
-      alert("Please fill in all teacher information");
-      return;
-    }
-
     if (uploadedFiles.length === 0) {
       alert("Please upload at least one photo");
       return;
@@ -355,8 +335,7 @@ function UploadPhotosContent() {
         setShowResults(true);
         console.log("Scan result:", resultWithEmojis);
       } else {
-        const errorText = await response.text();
-        throw new Error(`Failed to process photos: ${errorText}`);
+        throw new Error("Failed to process photos");
       }
     } catch (error) {
       console.error("Error uploading photos:", error);
@@ -368,24 +347,61 @@ function UploadPhotosContent() {
     }
   };
 
-  const getRatingDescription = (rating: string) => {
-    const ratingMap = {
-      "1": "Beginner",
-      "2": "Growing",
-      "3": "Expert",
-    };
-    return ratingMap[rating as keyof typeof ratingMap] || "Not rated";
+  const isStudentFullyGraded = (student: StudentAssessment) => {
+    const requiredFields = [
+      "q1Answer",
+      "q2Answer",
+      "q3Answer",
+      "q4Answer",
+      "q5Answer",
+      "q6Answer",
+      "q7Answer",
+    ];
+    return requiredFields.every(
+      (field) => student[field as keyof StudentAssessment] !== ""
+    );
   };
 
-  const getRatingColor = (rating: string) => {
-    const colorMap = {
-      "1": "bg-red-100 text-red-800",
-      "2": "bg-yellow-100 text-yellow-800",
-      "3": "bg-green-100 text-green-800",
-    };
-    return (
-      colorMap[rating as keyof typeof colorMap] || "bg-gray-100 text-gray-800"
-    );
+  const getStudentCardColor = (student: StudentAssessment) => {
+    if (!student.studentName.trim()) return "border-gray-200 bg-white";
+    if (isStudentFullyGraded(student)) {
+      return "border-green-200 bg-green-50";
+    }
+    return "border-yellow-200 bg-yellow-50";
+  };
+
+  const getStudentStatusText = (student: StudentAssessment) => {
+    if (!student.studentName.trim()) return "No name entered";
+    if (isStudentFullyGraded(student)) {
+      return "✓ Fully graded";
+    }
+    return "⚠ Incomplete";
+  };
+
+  const getStudentStatusColor = (student: StudentAssessment) => {
+    if (!student.studentName.trim()) return "text-gray-500";
+    if (isStudentFullyGraded(student)) {
+      return "text-green-600";
+    }
+    return "text-yellow-600";
+  };
+
+  const updateStudentGrade = (
+    studentIndex: number,
+    question: string,
+    value: string
+  ) => {
+    if (scanResult) {
+      const updatedStudents = [...scanResult.students];
+      updatedStudents[studentIndex] = {
+        ...updatedStudents[studentIndex],
+        [question]: value,
+      };
+      setScanResult({
+        ...scanResult,
+        students: updatedStudents,
+      });
+    }
   };
 
   const toggleStudentExpansion = (studentId: string) => {
@@ -421,110 +437,12 @@ function UploadPhotosContent() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {!showResults ? (
           <>
-            {/* Teacher Information */}
-            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-                Teacher Information
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Teacher Name
-                  </label>
-                  <input
-                    type="text"
-                    value={teacherInfo.teacherName}
-                    onChange={(e) =>
-                      setTeacherInfo((prev) => ({
-                        ...prev,
-                        teacherName: e.target.value,
-                      }))
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
-                    placeholder="Enter teacher name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    School
-                  </label>
-                  <select
-                    value={teacherInfo.school}
-                    onChange={(e) =>
-                      setTeacherInfo((prev) => ({
-                        ...prev,
-                        school: e.target.value,
-                      }))
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
-                  >
-                    <option value="">Select School</option>
-                    {schoolOptions.map((school) => (
-                      <option key={school} value={school}>
-                        {school}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Grade
-                  </label>
-                  <select
-                    value={teacherInfo.grade}
-                    onChange={(e) =>
-                      setTeacherInfo((prev) => ({
-                        ...prev,
-                        grade: e.target.value,
-                      }))
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
-                  >
-                    <option value="">Select Grade</option>
-                    {gradeOptions.map((grade) => (
-                      <option key={grade} value={grade}>
-                        {grade}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section
-                  </label>
-                  <select
-                    value={teacherInfo.section}
-                    onChange={(e) =>
-                      setTeacherInfo((prev) => ({
-                        ...prev,
-                        section: e.target.value,
-                      }))
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
-                  >
-                    <option value="">Select Section</option>
-                    {sectionOptions.map((section) => (
-                      <option key={section} value={section}>
-                        Section {section}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
             {/* Photo Upload Area */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                   Upload Rubric Photos
                 </h2>
-                <div className="flex items-center space-x-2">
-                  <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    AI POWERED
-                  </div>
-                </div>
               </div>
 
               <div className="bg-blue-50 rounded-lg p-4 mb-6">
@@ -785,10 +703,6 @@ function UploadPhotosContent() {
 
                   {/* Progress Bar */}
                   <div className="mb-6">
-                    <div className="flex justify-between text-xs text-gray-600 mb-2">
-                      <span>Progress</span>
-                      <span>{Math.round(loadingProgress)}%</span>
-                    </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-[#4F86E2] h-2 rounded-full transition-all duration-500 ease-out"
@@ -903,7 +817,7 @@ function UploadPhotosContent() {
                   Student Assessments ({scanResult.students.length})
                 </h3>
                 {scanResult.students.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {scanResult.students.map((student, index) => {
                       const studentId = `student-${index}`;
                       const isExpanded = expandedStudents.has(studentId);
@@ -911,17 +825,34 @@ function UploadPhotosContent() {
                       return (
                         <div
                           key={index}
-                          className="border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                          className={`border rounded-lg hover:shadow-md transition-shadow cursor-pointer ${getStudentCardColor(
+                            student
+                          )}`}
                           onClick={() => toggleStudentExpansion(studentId)}
                         >
                           {/* Student Card Header */}
-                          <div className="p-3 sm:p-4">
-                            <div className="flex items-center justify-between mb-2">
+                          <div className="p-4">
+                            <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center space-x-2">
-                                <span className="text-xl">{student.emoji}</span>
-                                <h4 className="font-medium text-gray-900 text-sm sm:text-base">
-                                  {student.studentName}
-                                </h4>
+                                <span className="text-2xl">
+                                  {student.emoji}
+                                </span>
+                                <div>
+                                  <h4 className="font-medium text-gray-900 text-sm">
+                                    {student.studentName}
+                                  </h4>
+                                  <span
+                                    className={`text-xs font-medium px-2 py-1 rounded-full ${getStudentStatusColor(
+                                      student
+                                    )} bg-opacity-10 ${
+                                      isStudentFullyGraded(student)
+                                        ? "bg-green-100"
+                                        : "bg-yellow-100"
+                                    }`}
+                                  >
+                                    {getStudentStatusText(student)}
+                                  </span>
+                                </div>
                               </div>
                               <div className="flex items-center space-x-2">
                                 {isExpanded ? (
@@ -944,91 +875,161 @@ function UploadPhotosContent() {
 
                           {/* Expanded Details */}
                           {isExpanded && (
-                            <div className="border-t border-gray-100 p-3 sm:p-4 bg-gray-50">
-                              <div className="space-y-2">
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                            <div className="border-t border-gray-100 p-4 bg-gray-50">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q1 (Self Awareness):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q1Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q1Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q1Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q1Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q2 (Self Awareness):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q2Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q2Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q2Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q2Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q3 (Self Awareness):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q3Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q3Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q3Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q3Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q4 (Self Management):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q4Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q4Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q4Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q4Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q5 (Self Management):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q5Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q5Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q5Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q5Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q6 (Self Management):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q6Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q6Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q5Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q6Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  <span className="text-gray-600">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium text-gray-700">
                                     Q7 (Self Management):
                                   </span>
-                                  <span
-                                    className={`ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRatingColor(
-                                      student.q7Answer
-                                    )}`}
-                                  >
-                                    {getRatingDescription(student.q7Answer)}
-                                  </span>
+                                  <StarRating
+                                    value={student.q7Answer}
+                                    onChange={(value) =>
+                                      updateStudentGrade(
+                                        index,
+                                        "q7Answer",
+                                        value
+                                      )
+                                    }
+                                    maxRating={3}
+                                    ratingLevels={{
+                                      "1": "1 Star",
+                                      "2": "2 Stars",
+                                      "3": "3 Stars",
+                                    }}
+                                    showLabel={false}
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -1068,9 +1069,5 @@ function UploadPhotosContent() {
 }
 
 export default function UploadPhotosPage() {
-  return (
-    <ProtectedRoute>
-      <UploadPhotosContent />
-    </ProtectedRoute>
-  );
+  return <UploadPhotosContent />;
 }

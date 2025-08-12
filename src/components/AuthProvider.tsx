@@ -7,12 +7,12 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { AuthService, AuthUser } from "@/lib/auth";
+import { AuthService, AuthUser, TeacherInfo } from "@/lib/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
-  login: () => Promise<void>;
+  login: (teacherInfo?: TeacherInfo) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -42,10 +42,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async () => {
+  const login = async (teacherInfo?: TeacherInfo) => {
     try {
       setIsLoading(true);
-      await AuthService.createAnonymousSession();
+      await AuthService.createAnonymousSession(teacherInfo);
 
       // Get user details after successful login
       const currentUser = await AuthService.getCurrentUser();

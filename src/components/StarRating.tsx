@@ -14,6 +14,7 @@ interface StarRatingProps {
   maxRating: number;
   ratingLevels: RatingLevels;
   disabled?: boolean;
+  showLabel?: boolean;
 }
 
 export default function StarRating({
@@ -22,6 +23,7 @@ export default function StarRating({
   maxRating,
   ratingLevels,
   disabled = false,
+  showLabel = false,
 }: StarRatingProps) {
   const currentRating = value ? parseInt(value) : 0;
 
@@ -63,7 +65,7 @@ export default function StarRating({
           </button>
         );
       })}
-      {value && (
+      {showLabel && value && (
         <span className="ml-2 text-xs sm:text-sm text-gray-600">
           {ratingLevels[value as keyof RatingLevels]}
         </span>

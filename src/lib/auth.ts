@@ -1,16 +1,31 @@
 import { account } from "./appwrite";
 import { ID } from "appwrite";
 
+export interface TeacherInfo {
+  teacherName: string;
+  school: string;
+  grade: string;
+  section: string;
+}
+
 export interface AuthUser {
   $id: string;
   name?: string;
   email?: string;
+  teacherInfo?: TeacherInfo;
 }
 
 export class AuthService {
-  static async createAnonymousSession(): Promise<void> {
+  static async createAnonymousSession(
+    teacherInfo?: TeacherInfo
+  ): Promise<void> {
     try {
       await account.createAnonymousSession();
+
+      // Store teacher info in localStorage if provided
+      if (teacherInfo) {
+        localStorage.setItem("teacherInfo", JSON.stringify(teacherInfo));
+      }
     } catch (error) {
       console.error("Error creating anonymous session:", error);
       throw error;
@@ -20,10 +35,18 @@ export class AuthService {
   static async getCurrentUser(): Promise<AuthUser | null> {
     try {
       const user = await account.get();
+
+      // Get teacher info from localStorage
+      const teacherInfoStr = localStorage.getItem("teacherInfo");
+      const teacherInfo = teacherInfoStr
+        ? JSON.parse(teacherInfoStr)
+        : undefined;
+
       return {
         $id: user.$id,
         name: user.name,
         email: user.email,
+        teacherInfo,
       };
     } catch (error) {
       console.error("Error getting current user:", error);
@@ -43,6 +66,8 @@ export class AuthService {
   static async logout(): Promise<void> {
     try {
       await account.deleteSessions();
+      // Clear teacher info from localStorage
+      localStorage.removeItem("teacherInfo");
     } catch (error) {
       console.error("Error logging out:", error);
       throw error;
