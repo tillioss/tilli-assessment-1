@@ -18,8 +18,10 @@ import {
 import { useNavbar } from "@/components/NavbarContext";
 import { useAuth } from "@/components/AuthProvider";
 import { getRandomEmoji } from "@/lib/emoji-assignment";
+import { createAssessment } from "@/lib/appwrite";
 import StarRating from "@/components/StarRating";
 import { rubricData } from "@/lib/rubric-data";
+import { AssessmentRecord } from "@/types";
 
 interface UploadedFile {
   file: File;
@@ -438,14 +440,48 @@ function UploadPhotosContent() {
 
   const handleSaveAssessment = async () => {
     try {
-      // TODO: Save to Appwrite database
-      console.log("Saving assessment:", scanResult);
+      if (!user?.$id) {
+        alert("Please log in to save assessments");
+        return;
+      }
 
-      // Show success message
-      alert("Assessment saved successfully!");
+      if (!scanResult) {
+        alert("No assessment data to save");
+        return;
+      }
+
+      // Save each student individually
+      for (const student of scanResult.students) {
+        const assessmentData = {
+          teacherId: user.$id,
+          teacherName: user?.teacherInfo?.teacherName || "Teacher",
+          school: user?.teacherInfo?.school || "School",
+          grade: user?.teacherInfo?.grade || "Grade",
+          section: user?.teacherInfo?.section || "Section",
+          studentName: student.studentName,
+          assessment: JSON.stringify([
+            student.q1Answer,
+            student.q2Answer,
+            student.q3Answer,
+            student.q4Answer,
+            student.q5Answer,
+            student.q6Answer,
+            student.q7Answer,
+            student.q8Answer,
+            student.q9Answer,
+            student.q10Answer,
+            student.q11Answer,
+          ]),
+          isManualEntry: false,
+          createdAt: new Date().toISOString(),
+        };
+
+        // Save to Appwrite database
+        await createAssessment(assessmentData);
+      }
 
       // Navigate to view assessments
-      router.push("/view-assessments");
+      router.push("/manual-entry");
     } catch (error) {
       console.error("Error saving assessment:", error);
       alert("Error saving assessment. Please try again.");

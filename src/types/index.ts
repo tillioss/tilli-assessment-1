@@ -47,12 +47,13 @@ export interface RubricData {
 
 export interface AssessmentRecord {
   $id?: string;
+  teacherId: string;
   teacherName: string;
   school: string;
   grade: string;
-  date: string;
-  students: Student[];
+  section: string;
+  studentName: string;
+  assessment: string;
   isManualEntry: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
 }

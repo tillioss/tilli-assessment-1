@@ -8,7 +8,7 @@ import Image from "next/image";
 
 const schoolOptions = ["Avalon Heights, Mumbai"];
 
-const gradeOptions = ["1st Grade"];
+const gradeOptions = ["Grade 1"];
 
 const sectionOptions = ["A", "B", "C"];
 
@@ -60,10 +60,11 @@ export default function LoginForm() {
       </div>
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Tilli Assessment
+          Hello!
         </h1>
         <p className="text-sm sm:text-base text-gray-600">
-          Teacher Assessment Rubric System
+          Welcome to Self Awareness and Self Management Assessment Report of
+          Students
         </p>
       </div>
 
