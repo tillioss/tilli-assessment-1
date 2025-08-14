@@ -1,60 +1,121 @@
 import { RubricData } from "@/types";
 
 export const rubricData: RubricData = {
-  studentName: "Ishani",
   ratingLevels: {
+    "0": "Never",
     "1": "Beginner",
     "2": "Growing",
     "3": "Expert",
   },
   skillCategories: [
     {
-      categoryName: "Self Awareness",
+      categoryName: "Self-Awareness, Social Awareness",
       criteria: [
         {
           id: "sa_1",
-          text: "The student is able to express their basic emotions using appropriate vocabulary (happy, sad, angry, surprised).",
-          example: "e.g. I am sad, I am feeling a little angry, I am scared",
-        },
-        {
-          id: "sa_2",
-          text: "The student is able to communicate their preferences (likes and dislikes).",
-          example:
-            "e.g. I am tired now and would like to rest, I would like to draw this instead of writing",
-        },
-        {
-          id: "sa_3",
-          text: "The student can communicate their strengths and weaknesses.",
-          example: "e.g. I am good at drawing, I want to get better at math",
+          text: "The student can name and express how they or others feel.",
+          example: "e.g. uses words like happy, sad, angry, excited",
         },
       ],
     },
     {
-      categoryName: "Self Management",
+      categoryName: "Self Awareness",
+      criteria: [
+        {
+          id: "sa_2",
+          text: "The student can express their likes and dislikes.",
+          example: "e.g. “I like drawing,” “I don't want to play that”",
+        },
+      ],
+    },
+    {
+      categoryName: "Self- Management, Metacognition",
+      criteria: [
+        {
+          id: "sa_3",
+          text: "The student keeps trying even when a task is difficult.",
+          example: "e.g. continues working on a puzzle or writing",
+        },
+      ],
+    },
+    {
+      categoryName: "Metacognition,  Critical Thinking",
       criteria: [
         {
           id: "sm_1",
-          text: "The student is able to communicate their needs when feeling a difficult emotion like anger, frustration, or anxiety.",
-          example:
-            "e.g. Student asks for help when frustrated instead of disturbing a peer",
+          text: "The student is able to ask for help when something is hard.",
+          example: "e.g. says “I need help,” or asks a friend",
         },
+      ],
+    },
+    {
+      categoryName: "Empathy, Social Awareness",
+      criteria: [
         {
           id: "sm_2",
-          text: "The student is able to recognize the emotions of others and respond accordingly.",
-          example:
-            "e.g. Will help a friend who is crying, Notices when someone is upset",
+          text: "The student is able to recognize the emotions of others and respond kindly.",
+          example: "e.g. helps a crying friend",
         },
+      ],
+    },
+    {
+      categoryName: "Empathy, Relationship Skills",
+      criteria: [
         {
           id: "sm_3",
-          text: "The student is able to resolve a conflict with a peer without the help of an adult.",
-          example:
-            "e.g. Student negotiates/discusses with a peer and resolves a conflict without hitting/scolding them",
+          text: "The student shows care when someone is hurt or sad.",
+          example: "e.g. checks on them, offers a hug, says kind words",
         },
+      ],
+    },
+    {
+      categoryName: "Responsible Decision-Making, Critical Thinking",
+      criteria: [
         {
           id: "sm_4",
-          text: "The student is able to control their impulses and pay attention to a given task.",
+          text: "The student is able to solve problems with peers peacefully.",
+          example: "e.g. takes turns, talks it out",
+        },
+      ],
+    },
+    {
+      categoryName: "Self-Management",
+      criteria: [
+        {
+          id: "sm_5",
+          text: "The student is able to calm down when upset or excited.",
+          example: "e.g. takes deep breaths, walks away, asks for a break",
+        },
+      ],
+    },
+    {
+      categoryName: "Self-Management, Responsible Decision-Making",
+      criteria: [
+        {
+          id: "sm_6",
+          text: "The student can stop and think before acting.",
           example:
-            "e.g. If there is a loud noise while you are teaching, the student doesn't get distracted",
+            "e.g. waits their turn, follows directions instead of rushing",
+        },
+      ],
+    },
+    {
+      categoryName: "Metacognition, Self-Awareness",
+      criteria: [
+        {
+          id: "sm_7",
+          text: "The student is aware of their strengths and areas they want to improve.",
+          example: "e.g. “I'm good at drawing...",
+        },
+      ],
+    },
+    {
+      categoryName: "Metacognition",
+      criteria: [
+        {
+          id: "sm_8",
+          text: "The student can say what they want to learn or get better at.",
+          example: "e.g. “I want to read more books”",
         },
       ],
     },

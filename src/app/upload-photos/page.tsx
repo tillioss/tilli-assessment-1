@@ -19,6 +19,7 @@ import { useNavbar } from "@/components/NavbarContext";
 import { useAuth } from "@/components/AuthProvider";
 import { getRandomEmoji } from "@/lib/emoji-assignment";
 import StarRating from "@/components/StarRating";
+import { rubricData } from "@/lib/rubric-data";
 
 interface UploadedFile {
   file: File;
@@ -34,6 +35,10 @@ interface StudentAssessment {
   q5Answer: string;
   q6Answer: string;
   q7Answer: string;
+  q8Answer: string;
+  q9Answer: string;
+  q10Answer: string;
+  q11Answer: string;
   studentName: string;
   emoji?: string;
 }
@@ -318,10 +323,21 @@ function UploadPhotosContent() {
         // Small delay to show completion
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Assign emojis to students
+        // Assign emojis to students and ensure all questions are initialized
         const studentsWithEmojis = result.students.map(
           (student: StudentAssessment) => ({
-            ...student,
+            q1Answer: student.q1Answer || "",
+            q2Answer: student.q2Answer || "",
+            q3Answer: student.q3Answer || "",
+            q4Answer: student.q4Answer || "",
+            q5Answer: student.q5Answer || "",
+            q6Answer: student.q6Answer || "",
+            q7Answer: student.q7Answer || "",
+            q8Answer: student.q8Answer || "",
+            q9Answer: student.q9Answer || "",
+            q10Answer: student.q10Answer || "",
+            q11Answer: student.q11Answer || "",
+            studentName: student.studentName || "",
             emoji: getRandomEmoji(),
           })
         );
@@ -356,6 +372,10 @@ function UploadPhotosContent() {
       "q5Answer",
       "q6Answer",
       "q7Answer",
+      "q8Answer",
+      "q9Answer",
+      "q10Answer",
+      "q11Answer",
     ];
     return requiredFields.every(
       (field) => student[field as keyof StudentAssessment] !== ""
@@ -828,10 +848,12 @@ function UploadPhotosContent() {
                           className={`border rounded-lg hover:shadow-md transition-shadow cursor-pointer ${getStudentCardColor(
                             student
                           )}`}
-                          onClick={() => toggleStudentExpansion(studentId)}
                         >
                           {/* Student Card Header */}
-                          <div className="p-4">
+                          <div
+                            className="p-4"
+                            onClick={() => toggleStudentExpansion(studentId)}
+                          >
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center space-x-2">
                                 <span className="text-2xl">
@@ -876,161 +898,67 @@ function UploadPhotosContent() {
                           {/* Expanded Details */}
                           {isExpanded && (
                             <div className="border-t border-gray-100 p-4 bg-gray-50">
-                              <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q1 (Self Awareness):
-                                  </span>
-                                  <StarRating
-                                    value={student.q1Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q1Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q2 (Self Awareness):
-                                  </span>
-                                  <StarRating
-                                    value={student.q2Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q2Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q3 (Self Awareness):
-                                  </span>
-                                  <StarRating
-                                    value={student.q3Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q3Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q4 (Self Management):
-                                  </span>
-                                  <StarRating
-                                    value={student.q4Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q4Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q5 (Self Management):
-                                  </span>
-                                  <StarRating
-                                    value={student.q5Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q5Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q6 (Self Management):
-                                  </span>
-                                  <StarRating
-                                    value={student.q5Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q6Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-gray-700">
-                                    Q7 (Self Management):
-                                  </span>
-                                  <StarRating
-                                    value={student.q7Answer}
-                                    onChange={(value) =>
-                                      updateStudentGrade(
-                                        index,
-                                        "q7Answer",
-                                        value
-                                      )
-                                    }
-                                    maxRating={3}
-                                    ratingLevels={{
-                                      "1": "1 Star",
-                                      "2": "2 Stars",
-                                      "3": "3 Stars",
-                                    }}
-                                    showLabel={false}
-                                  />
-                                </div>
+                              <div className="space-y-4">
+                                {rubricData.skillCategories.map(
+                                  (category, categoryIndex) => (
+                                    <div
+                                      key={categoryIndex}
+                                      className="border-l-4 border-blue-200 pl-3"
+                                    >
+                                      <h4 className="text-xs font-semibold text-gray-900 mb-2">
+                                        {category.categoryName}
+                                      </h4>
+                                      <div className="space-y-3">
+                                        {category.criteria.map(
+                                          (criterion, criterionIndex) => {
+                                            const questionNumber =
+                                              categoryIndex *
+                                                category.criteria.length +
+                                              criterionIndex +
+                                              1;
+                                            const fieldName =
+                                              `q${questionNumber}Answer` as keyof StudentAssessment;
+
+                                            return (
+                                              <div
+                                                key={criterion.id}
+                                                className="bg-gray-50 rounded-lg p-3"
+                                              >
+                                                <div className="mb-2">
+                                                  <p className="text-xs font-medium text-gray-900 mb-1">
+                                                    {criterion.text}
+                                                  </p>
+                                                  <p className="text-xs text-gray-600 italic">
+                                                    {criterion.example}
+                                                  </p>
+                                                </div>
+                                                <div className="mt-3">
+                                                  <StarRating
+                                                    value={
+                                                      student[fieldName] || ""
+                                                    }
+                                                    onChange={(value) =>
+                                                      updateStudentGrade(
+                                                        index,
+                                                        fieldName,
+                                                        value
+                                                      )
+                                                    }
+                                                    maxRating={4}
+                                                    ratingLevels={
+                                                      rubricData.ratingLevels
+                                                    }
+                                                    showLabel={false}
+                                                  />
+                                                </div>
+                                              </div>
+                                            );
+                                          }
+                                        )}
+                                      </div>
+                                    </div>
+                                  )
+                                )}
                               </div>
                             </div>
                           )}

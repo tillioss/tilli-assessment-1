@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Save, Star, FileText, Eye } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 import { rubricData } from "@/lib/rubric-data";
 import { Student, AssessmentRecord } from "@/types";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -16,6 +16,25 @@ function ManualEntryContent() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { setBackButton, hideBackButton } = useNavbar();
 
+  const [students, setStudents] = useState<Student[]>([
+    {
+      studentName: "",
+      emoji: getRandomEmoji(),
+      q1Answer: "",
+      q2Answer: "",
+      q3Answer: "",
+      q4Answer: "",
+      q5Answer: "",
+      q6Answer: "",
+      q7Answer: "",
+      q8Answer: "",
+      q9Answer: "",
+      q10Answer: "",
+      q11Answer: "",
+    },
+  ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     setBackButton("/", "Back");
     return () => hideBackButton();
@@ -27,13 +46,6 @@ function ManualEntryContent() {
       router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
-
-  const teacherInfo = user?.teacherInfo || {
-    teacherName: "",
-    school: "",
-    grade: "",
-    section: "",
-  };
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -52,21 +64,6 @@ function ManualEntryContent() {
     return null;
   }
 
-  const [students, setStudents] = useState<Student[]>([
-    {
-      studentName: "",
-      emoji: getRandomEmoji(),
-      q1Answer: "",
-      q2Answer: "",
-      q3Answer: "",
-      q4Answer: "",
-      q5Answer: "",
-      q6Answer: "",
-      q7Answer: "",
-    },
-  ]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const addStudent = () => {
     setStudents((prev) => [
       ...prev,
@@ -80,6 +77,10 @@ function ManualEntryContent() {
         q5Answer: "",
         q6Answer: "",
         q7Answer: "",
+        q8Answer: "",
+        q9Answer: "",
+        q10Answer: "",
+        q11Answer: "",
       },
     ]);
   };
@@ -237,7 +238,7 @@ function ManualEntryContent() {
                                       value
                                     )
                                   }
-                                  maxRating={3}
+                                  maxRating={4}
                                   ratingLevels={rubricData.ratingLevels}
                                 />
                               </div>

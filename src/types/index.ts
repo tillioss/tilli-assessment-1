@@ -8,6 +8,10 @@ export interface Student {
   q5Answer: string;
   q6Answer: string;
   q7Answer: string;
+  q8Answer: string;
+  q9Answer: string;
+  q10Answer: string;
+  q11Answer: string;
 }
 
 export interface RubricScanResponse {
@@ -19,6 +23,7 @@ export interface RubricScanResponse {
 }
 
 export interface RatingLevels {
+  "0": string;
   "1": string;
   "2": string;
   "3": string;
@@ -36,7 +41,6 @@ export interface SkillCategory {
 }
 
 export interface RubricData {
-  studentName: string;
   ratingLevels: RatingLevels;
   skillCategories: SkillCategory[];
 }

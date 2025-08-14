@@ -3,6 +3,7 @@
 import { Star } from "lucide-react";
 
 interface RatingLevels {
+  "0": string;
   "1": string;
   "2": string;
   "3": string;
@@ -32,11 +33,6 @@ export default function StarRating({
       onChange(starValue.toString());
     }
   };
-
-  const handleStarHover = (starValue: number) => {
-    // Optional: Add hover effects if needed
-  };
-
   return (
     <div className="flex items-center space-x-1">
       {Array.from({ length: maxRating }, (_, index) => {
@@ -48,14 +44,13 @@ export default function StarRating({
             key={starValue}
             type="button"
             onClick={() => handleStarClick(starValue)}
-            onMouseEnter={() => handleStarHover(starValue)}
             disabled={disabled}
             className={`transition-colors duration-200 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer hover:scale-110"
             }`}
           >
             <Star
-              size={20}
+              size={32}
               className={`${
                 isFilled
                   ? "fill-yellow-400 text-yellow-400"

@@ -36,65 +36,7 @@ function ViewAssessmentsContent() {
   useEffect(() => {
     // TODO: Fetch assessments from Appwrite
     // For now, using mock data
-    const mockAssessments: AssessmentRecord[] = [
-      {
-        $id: "1",
-        teacherName: "Sarah Johnson",
-        school: "Springfield Elementary",
-        grade: "3rd Grade",
-        date: "2024-01-15",
-        students: [
-          {
-            studentName: "Emma Wilson",
-            emoji: "🌸",
-            q1Answer: "3",
-            q2Answer: "2",
-            q3Answer: "3",
-            q4Answer: "2",
-            q5Answer: "3",
-            q6Answer: "2",
-            q7Answer: "3",
-          },
-          {
-            studentName: "Michael Chen",
-            emoji: "⭐",
-            q1Answer: "2",
-            q2Answer: "3",
-            q3Answer: "2",
-            q4Answer: "3",
-            q5Answer: "2",
-            q6Answer: "3",
-            q7Answer: "2",
-          },
-        ],
-        isManualEntry: true,
-        createdAt: "2024-01-15T10:30:00Z",
-        updatedAt: "2024-01-15T10:30:00Z",
-      },
-      {
-        $id: "2",
-        teacherName: "David Rodriguez",
-        school: "Lincoln Middle School",
-        grade: "5th Grade",
-        date: "2024-01-14",
-        students: [
-          {
-            studentName: "Aisha Patel",
-            emoji: "🌺",
-            q1Answer: "3",
-            q2Answer: "3",
-            q3Answer: "3",
-            q4Answer: "2",
-            q5Answer: "3",
-            q6Answer: "3",
-            q7Answer: "2",
-          },
-        ],
-        isManualEntry: false,
-        createdAt: "2024-01-14T14:20:00Z",
-        updatedAt: "2024-01-14T14:20:00Z",
-      },
-    ];
+    const mockAssessments: AssessmentRecord[] = [];
 
     setAssessments(mockAssessments);
     setIsLoading(false);
