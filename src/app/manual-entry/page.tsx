@@ -2,27 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Plus,
-  Save,
-  Eye,
-  ChevronDown,
-  ChevronUp,
-  CheckCircle,
-  Edit,
-  X,
-} from "lucide-react";
+import { Plus, ChevronDown, ChevronUp, CheckCircle, Edit } from "lucide-react";
 import { rubricData } from "@/lib/rubric-data";
 import { Student, AssessmentRecord } from "@/types";
 import StarRating from "@/components/StarRating";
-import { getRandomEmoji } from "@/lib/emoji-assignment";
 import { useNavbar } from "@/components/NavbarContext";
 import { useAuth } from "@/components/AuthProvider";
-import {
-  createAssessment,
-  getAssessments,
-  updateAssessment,
-} from "@/lib/appwrite";
+import { createAssessment, getAssessments } from "@/lib/appwrite";
+import EditAssessmentModal from "@/components/EditAssessmentModal";
 
 function ManualEntryContent() {
   const router = useRouter();
@@ -32,7 +19,7 @@ function ManualEntryContent() {
   const [students, setStudents] = useState<Student[]>([
     {
       studentName: "",
-      emoji: getRandomEmoji(),
+      emoji: "👤", // Use consistent emoji to avoid hydration issues
       q1Answer: "",
       q2Answer: "",
       q3Answer: "",
@@ -54,11 +41,9 @@ function ManualEntryContent() {
     []
   );
   const [isLoadingAssessments, setIsLoadingAssessments] = useState(true);
-  const [editingAssessmentId, setEditingAssessmentId] = useState<string | null>(
-    null
-  );
-  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
-  const [inPlaceEditingId, setInPlaceEditingId] = useState<string | null>(null);
+  const [editingAssessment, setEditingAssessment] =
+    useState<AssessmentRecord | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     setBackButton("/", "Back");
@@ -176,171 +161,31 @@ function ManualEntryContent() {
     });
   };
 
-  const startEditing = (assessment: AssessmentRecord) => {
-    try {
-      const answers = JSON.parse(assessment.assessment);
-      const student: Student = {
-        studentName: assessment.studentName,
-        emoji: getRandomEmoji(),
-        q1Answer: answers[0] || "",
-        q2Answer: answers[1] || "",
-        q3Answer: answers[2] || "",
-        q4Answer: answers[3] || "",
-        q5Answer: answers[4] || "",
-        q6Answer: answers[5] || "",
-        q7Answer: answers[6] || "",
-        q8Answer: answers[7] || "",
-        q9Answer: answers[8] || "",
-        q10Answer: answers[9] || "",
-        q11Answer: answers[10] || "",
-      };
-      setEditingStudent(student);
-      setEditingAssessmentId(assessment.$id || null);
-    } catch (error) {
-      console.error("Error parsing assessment data for editing:", error);
-    }
+  const openEditModal = (assessment: AssessmentRecord) => {
+    setEditingAssessment(assessment);
+    setIsEditModalOpen(true);
   };
 
-  const cancelEditing = () => {
-    setEditingStudent(null);
-    setEditingAssessmentId(null);
+  const closeEditModal = () => {
+    setEditingAssessment(null);
+    setIsEditModalOpen(false);
   };
 
-  const updateEditingStudent = (field: keyof Student, value: string) => {
-    if (editingStudent) {
-      setEditingStudent({ ...editingStudent, [field]: value });
-    }
-  };
-
-  const saveEditedAssessment = async () => {
-    if (!editingStudent || !editingAssessmentId || !user?.$id) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const assessmentData = {
-        teacherId: user.$id,
-        teacherName: user?.teacherInfo?.teacherName || "Teacher",
-        school: user?.teacherInfo?.school || "School",
-        grade: user?.teacherInfo?.grade || "Grade",
-        section: user?.teacherInfo?.section || "Section",
-        studentName: editingStudent.studentName,
-        assessment: JSON.stringify([
-          editingStudent.q1Answer,
-          editingStudent.q2Answer,
-          editingStudent.q3Answer,
-          editingStudent.q4Answer,
-          editingStudent.q5Answer,
-          editingStudent.q6Answer,
-          editingStudent.q7Answer,
-          editingStudent.q8Answer,
-          editingStudent.q9Answer,
-          editingStudent.q10Answer,
-          editingStudent.q11Answer,
-        ]),
-        isManualEntry: true,
-      };
-
-      await updateAssessment(editingAssessmentId, assessmentData);
-
-      // Update local state
-      setSavedAssessments((prev) =>
-        prev.map((assessment) =>
-          assessment.$id === editingAssessmentId
-            ? { ...assessment, ...assessmentData }
-            : assessment
-        )
-      );
-
-      cancelEditing();
-    } catch (error) {
-      console.error("Error updating assessment:", error);
-      alert("Error updating assessment. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const startInPlaceEditing = (assessmentId: string) => {
-    setInPlaceEditingId(assessmentId);
-  };
-
-  const cancelInPlaceEditing = () => {
-    setInPlaceEditingId(null);
-  };
-
-  const updateInPlaceAssessment = async (
-    assessmentId: string,
-    fieldName: string,
-    value: string
-  ) => {
-    const assessment = savedAssessments.find((a) => a.$id === assessmentId);
-    if (!assessment || !user?.$id) return;
-
-    try {
-      const answers = JSON.parse(assessment.assessment);
-
-      if (fieldName === "studentName") {
-        // Update student name
-        const assessmentData = {
-          teacherId: user.$id,
-          teacherName: user?.teacherInfo?.teacherName || "Teacher",
-          school: user?.teacherInfo?.school || "School",
-          grade: user?.teacherInfo?.grade || "Grade",
-          section: user?.teacherInfo?.section || "Section",
-          studentName: value,
-          assessment: assessment.assessment,
-          isManualEntry: true,
-        };
-
-        await updateAssessment(assessmentId, assessmentData);
-
-        // Update local state
-        setSavedAssessments((prev) =>
-          prev.map((a) =>
-            a.$id === assessmentId ? { ...a, ...assessmentData } : a
-          )
-        );
-      } else {
-        // Update rating
-        const questionNumber = parseInt(
-          fieldName.replace("q", "").replace("Answer", "")
-        );
-        answers[questionNumber - 1] = value;
-
-        const assessmentData = {
-          teacherId: user.$id,
-          teacherName: user?.teacherInfo?.teacherName || "Teacher",
-          school: user?.teacherInfo?.school || "School",
-          grade: user?.teacherInfo?.grade || "Grade",
-          section: user?.teacherInfo?.section || "Section",
-          studentName: assessment.studentName,
-          assessment: JSON.stringify(answers),
-          isManualEntry: true,
-        };
-
-        await updateAssessment(assessmentId, assessmentData);
-
-        // Update local state
-        setSavedAssessments((prev) =>
-          prev.map((a) =>
-            a.$id === assessmentId ? { ...a, ...assessmentData } : a
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error updating assessment in place:", error);
-      alert("Error updating assessment. Please try again.");
-    }
+  const handleAssessmentUpdate = (updatedAssessment: AssessmentRecord) => {
+    setSavedAssessments((prev) =>
+      prev.map((assessment) =>
+        assessment.$id === updatedAssessment.$id
+          ? updatedAssessment
+          : assessment
+      )
+    );
   };
 
   const resetForm = () => {
     setStudents([
       {
         studentName: "",
-        emoji: getRandomEmoji(),
+        emoji: "👤", // Use consistent emoji to avoid hydration issues
         q1Answer: "",
         q2Answer: "",
         q3Answer: "",
@@ -410,8 +255,13 @@ function ManualEntryContent() {
         };
 
         // Save to database
-        await createAssessment(assessmentData);
-        savedAssessments.push(assessmentData);
+        const savedAssessment = await createAssessment(assessmentData);
+        // Add the database ID to the assessment data
+        const assessmentWithId = {
+          ...assessmentData,
+          $id: savedAssessment.$id,
+        };
+        savedAssessments.push(assessmentWithId);
       }
 
       // Add to local state
@@ -419,6 +269,9 @@ function ManualEntryContent() {
 
       // Reset form
       resetForm();
+
+      // Scroll to top to show the newly added assessment
+      window.scrollTo({ top: 0, behavior: "smooth" });
 
       console.log("Assessments saved:", savedAssessments);
     } catch (error) {
@@ -434,8 +287,9 @@ function ManualEntryContent() {
       try {
         const answers = JSON.parse(assessment.assessment);
         return {
+          $id: assessment.$id, // Preserve the assessment ID
           studentName: assessment.studentName,
-          emoji: getRandomEmoji(),
+          emoji: "👤", // Use consistent emoji to avoid hydration issues
           q1Answer: answers[0] || "",
           q2Answer: answers[1] || "",
           q3Answer: answers[2] || "",
@@ -457,6 +311,7 @@ function ManualEntryContent() {
       }
     })
     .filter(Boolean) as (Student & {
+    $id?: string;
     teacherName: string;
     school: string;
     grade: string;
@@ -505,26 +360,9 @@ function ManualEntryContent() {
                           <div className="flex items-center space-x-2">
                             <span className="text-xl">{student.emoji}</span>
                             <div>
-                              {inPlaceEditingId ===
-                              savedAssessments[studentIndex].$id ? (
-                                <input
-                                  type="text"
-                                  value={student.studentName}
-                                  onChange={(e) =>
-                                    updateInPlaceAssessment(
-                                      savedAssessments[studentIndex].$id || "",
-                                      "studentName",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="text-xs font-medium text-gray-900 bg-white border border-blue-300 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              ) : (
-                                <h5 className="font-medium text-gray-900 text-xs">
-                                  {student.studentName}
-                                </h5>
-                              )}
+                              <h5 className="font-medium text-gray-900 text-xs">
+                                {student.studentName}
+                              </h5>
                               <span
                                 className={`text-xs font-medium px-2 py-1 rounded-full ${getStudentStatusColor(
                                   student
@@ -539,36 +377,27 @@ function ManualEntryContent() {
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            {inPlaceEditingId ===
-                            savedAssessments[studentIndex].$id ? (
-                              <>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    cancelInPlaceEditing();
-                                  }}
-                                  className="p-1 text-green-600 hover:text-green-800 transition-colors"
-                                  title="Done editing"
-                                >
-                                  <CheckCircle size={14} />
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    startInPlaceEditing(
-                                      savedAssessments[studentIndex].$id || ""
-                                    );
-                                  }}
-                                  className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
-                                  title="Edit in place"
-                                >
-                                  <Edit size={14} />
-                                </button>
-                              </>
-                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const assessment = savedAssessments.find(
+                                  (a) =>
+                                    a.$id === displayStudents[studentIndex].$id
+                                );
+                                if (assessment) {
+                                  openEditModal(assessment);
+                                } else {
+                                  console.error(
+                                    "Assessment not found for student:",
+                                    displayStudents[studentIndex]
+                                  );
+                                }
+                              }}
+                              className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                              title="Edit assessment"
+                            >
+                              <Edit size={20} />
+                            </button>
                             {isExpanded ? (
                               <ChevronUp size={14} className="text-gray-400" />
                             ) : (
@@ -618,29 +447,13 @@ function ManualEntryContent() {
                                             <div className="mt-2">
                                               <StarRating
                                                 value={student[fieldName] || ""}
-                                                onChange={(value) =>
-                                                  inPlaceEditingId ===
-                                                  savedAssessments[studentIndex]
-                                                    .$id
-                                                    ? updateInPlaceAssessment(
-                                                        savedAssessments[
-                                                          studentIndex
-                                                        ].$id || "",
-                                                        fieldName,
-                                                        value
-                                                      )
-                                                    : undefined
-                                                }
+                                                onChange={() => {}}
                                                 maxRating={4}
                                                 ratingLevels={
                                                   rubricData.ratingLevels
                                                 }
                                                 showLabel={false}
-                                                disabled={
-                                                  inPlaceEditingId !==
-                                                  savedAssessments[studentIndex]
-                                                    .$id
-                                                }
+                                                disabled={true}
                                               />
                                             </div>
                                           </div>
@@ -667,116 +480,6 @@ function ManualEntryContent() {
             )}
           </div>
         </div>
-
-        {/* Edit Assessment Form */}
-        {editingStudent && editingAssessmentId && (
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-blue-200">
-            <div className="mb-4 sm:mb-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  Edit Student Assessment
-                </h2>
-                <button
-                  onClick={cancelEditing}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-              {/* Student Name */}
-              <div className="mb-4 sm:mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <span className="text-xl mr-2">{editingStudent.emoji}</span>
-                  Student Name *
-                </label>
-                <input
-                  type="text"
-                  value={editingStudent.studentName}
-                  onChange={(e) =>
-                    updateEditingStudent("studentName", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
-                  placeholder="Enter student name"
-                  required
-                />
-              </div>
-
-              {/* Assessment Criteria */}
-              <div className="space-y-4 sm:space-y-6">
-                {rubricData.skillCategories.map((category, categoryIndex) => (
-                  <div
-                    key={categoryIndex}
-                    className="border-l-4 border-blue-200 pl-3 sm:pl-4"
-                  >
-                    <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">
-                      {category.categoryName}
-                    </h4>
-                    <div className="space-y-3 sm:space-y-4">
-                      {category.criteria.map((criterion, criterionIndex) => {
-                        const questionNumber =
-                          categoryIndex * category.criteria.length +
-                          criterionIndex +
-                          1;
-                        const fieldName =
-                          `q${questionNumber}Answer` as keyof Student;
-
-                        return (
-                          <div
-                            key={criterion.id}
-                            className="bg-gray-50 rounded-lg p-3 sm:p-4"
-                          >
-                            <div className="mb-2 sm:mb-3">
-                              <p className="text-xs sm:text-sm font-medium text-gray-900 mb-1">
-                                {criterion.text}
-                              </p>
-                              <p className="text-xs text-gray-600 italic">
-                                {criterion.example}
-                              </p>
-                            </div>
-                            <div className="mt-3">
-                              <StarRating
-                                value={editingStudent[fieldName]}
-                                onChange={(value) =>
-                                  updateEditingStudent(fieldName, value)
-                                }
-                                maxRating={4}
-                                ratingLevels={rubricData.ratingLevels}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Save Edit Button */}
-            <div className="text-center">
-              <button
-                onClick={saveEditedAssessment}
-                disabled={isSubmitting}
-                className="bg-[#4F86E2] text-white px-6 sm:px-8 py-3 rounded-full hover:bg-[#3d6bc7] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Saving Changes...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Save size={18} className="sm:w-5 sm:h-5" />
-                    <span>Save Changes</span>
-                  </div>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Students Assessment Form */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
@@ -888,11 +591,20 @@ function ManualEntryContent() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Plus size={18} className="sm:w-5 sm:h-5" />
-                <span>Save Student Assessment</span>
+                <span>Save Student Report</span>
               </div>
             )}
           </button>
         </div>
+
+        {/* Edit Assessment Modal */}
+        <EditAssessmentModal
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          assessment={editingAssessment}
+          onSave={handleAssessmentUpdate}
+          user={user}
+        />
       </main>
     </div>
   );
