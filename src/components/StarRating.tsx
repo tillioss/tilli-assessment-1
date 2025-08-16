@@ -36,8 +36,8 @@ export default function StarRating({
   return (
     <div className="flex items-center space-x-1">
       {Array.from({ length: maxRating }, (_, index) => {
-        const starValue = index + 1;
-        const isFilled = starValue <= currentRating;
+        const starValue = index;
+        const isFilled = value && starValue <= currentRating;
 
         return (
           <button

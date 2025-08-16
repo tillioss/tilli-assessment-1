@@ -60,12 +60,8 @@ export default function LoginForm() {
       </div>
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Hello!
+          Hello teacher! 👋
         </h1>
-        <p className="text-sm sm:text-base text-gray-600">
-          Welcome to Self Awareness and Self Management Assessment Report of
-          Students
-        </p>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">

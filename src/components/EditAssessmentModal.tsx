@@ -23,6 +23,7 @@ export default function EditAssessmentModal({
   user,
 }: EditAssessmentModalProps) {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [originalStudent, setOriginalStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -50,6 +51,7 @@ export default function EditAssessmentModal({
           q11Answer: answers[10] || "",
         };
         setEditingStudent(student);
+        setOriginalStudent(student); // Store original data for comparison
       } catch (error) {
         console.error("Error parsing assessment data for editing:", error);
       }
@@ -115,8 +117,42 @@ export default function EditAssessmentModal({
     }
   };
 
+  const hasUnsavedChanges = () => {
+    if (!editingStudent || !originalStudent) return false;
+
+    // Compare all fields
+    const fieldsToCompare: (keyof Student)[] = [
+      "studentName",
+      "q1Answer",
+      "q2Answer",
+      "q3Answer",
+      "q4Answer",
+      "q5Answer",
+      "q6Answer",
+      "q7Answer",
+      "q8Answer",
+      "q9Answer",
+      "q10Answer",
+      "q11Answer",
+    ];
+
+    return fieldsToCompare.some(
+      (field) => editingStudent[field] !== originalStudent[field]
+    );
+  };
+
   const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      const confirmed = window.confirm(
+        "You have unsaved changes. Are you sure you want to close without saving?"
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+
     setEditingStudent(null);
+    setOriginalStudent(null);
     setIsSubmitting(false);
     onClose();
   };
@@ -174,7 +210,7 @@ export default function EditAssessmentModal({
                   key={categoryIndex}
                   className="border-l-4 border-blue-200 pl-4"
                 >
-                  <h4 className="text-base font-semibold text-gray-900 mb-3">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">
                     {category.categoryName}
                   </h4>
                   <div className="space-y-4">
@@ -192,7 +228,7 @@ export default function EditAssessmentModal({
                           className="bg-gray-50 rounded-lg p-4"
                         >
                           <div className="mb-3">
-                            <p className="text-sm font-medium text-gray-900 mb-1">
+                            <p className="text-md font-medium text-gray-900 mb-1">
                               {criterion.text}
                             </p>
                             <p className="text-xs text-gray-600 italic">
@@ -205,6 +241,7 @@ export default function EditAssessmentModal({
                               onChange={(value) =>
                                 updateEditingStudent(fieldName, value)
                               }
+                              showLabel={true}
                               maxRating={4}
                               ratingLevels={rubricData.ratingLevels}
                               disabled={isSubmitting}

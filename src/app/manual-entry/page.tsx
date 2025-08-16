@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, ChevronDown, ChevronUp, CheckCircle, Edit } from "lucide-react";
+import { ChevronDown, ChevronUp, CheckCircle, Edit, Star } from "lucide-react";
 import { rubricData } from "@/lib/rubric-data";
 import { Student, AssessmentRecord } from "@/types";
 import StarRating from "@/components/StarRating";
@@ -452,7 +452,7 @@ function ManualEntryContent() {
                                                 ratingLevels={
                                                   rubricData.ratingLevels
                                                 }
-                                                showLabel={false}
+                                                showLabel={true}
                                                 disabled={true}
                                               />
                                             </div>
@@ -477,6 +477,55 @@ function ManualEntryContent() {
                   No saved assessments found. Add your first student below.
                 </p>
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* Star Rating Legend */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm p-6 mb-6 sm:mb-8">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center justify-center">
+              <Star className="w-5 h-5 text-yellow-500 mr-2" />
+              Understanding Star Ratings
+              <Star className="w-5 h-5 text-yellow-500 ml-2" />
+            </h3>
+            <p className="text-sm text-gray-600">
+              Use the star ratings below to assess student performance for each
+              criterion
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Object.entries(rubricData.ratingLevels).map(
+              ([rating, description]) => (
+                <div
+                  key={rating}
+                  className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="flex items-center justify-center mb-3">
+                    <div className="flex space-x-1">
+                      {Array.from({ length: 4 }, (_, index) => (
+                        <Star
+                          key={index}
+                          size={24}
+                          className={`${
+                            index < parseInt(rating) + 1
+                              ? "fill-yellow-400 text-yellow-400 drop-shadow-sm"
+                              : "text-gray-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      {`${parseInt(rating) + 1} Star`}
+                    </div>
+                    <div className="text-sm font-medium text-gray-900 leading-tight">
+                      {description}
+                    </div>
+                  </div>
+                </div>
+              )
             )}
           </div>
         </div>
@@ -530,7 +579,7 @@ function ManualEntryContent() {
                     key={categoryIndex}
                     className="border-l-4 border-blue-200 pl-3 sm:pl-4"
                   >
-                    <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2 sm:mb-3">
                       {category.categoryName}
                     </h4>
                     <div className="space-y-3 sm:space-y-4">
@@ -548,7 +597,7 @@ function ManualEntryContent() {
                             className="bg-gray-50 rounded-lg p-3 sm:p-4"
                           >
                             <div className="mb-2 sm:mb-3">
-                              <p className="text-xs sm:text-sm font-medium text-gray-900 mb-1">
+                              <p className="text-md font-medium text-gray-900 mb-1">
                                 {criterion.text}
                               </p>
                               <p className="text-xs text-gray-600 italic">
@@ -561,6 +610,7 @@ function ManualEntryContent() {
                                 onChange={(value) =>
                                   updateStudent(studentIndex, fieldName, value)
                                 }
+                                showLabel={true}
                                 maxRating={4}
                                 ratingLevels={rubricData.ratingLevels}
                               />
@@ -590,8 +640,7 @@ function ManualEntryContent() {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Plus size={18} className="sm:w-5 sm:h-5" />
-                <span>Save Student Report</span>
+                Save Student Report
               </div>
             )}
           </button>
