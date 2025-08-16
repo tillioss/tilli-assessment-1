@@ -19,7 +19,7 @@ function ManualEntryContent() {
   const [students, setStudents] = useState<Student[]>([
     {
       studentName: "",
-      emoji: "👤", // Use consistent emoji to avoid hydration issues
+      emoji: "👤",
       q1Answer: "",
       q2Answer: "",
       q3Answer: "",
@@ -185,7 +185,7 @@ function ManualEntryContent() {
     setStudents([
       {
         studentName: "",
-        emoji: "👤", // Use consistent emoji to avoid hydration issues
+        emoji: "👤",
         q1Answer: "",
         q2Answer: "",
         q3Answer: "",
@@ -224,7 +224,6 @@ function ManualEntryContent() {
     setIsSubmitting(true);
 
     try {
-      // Save each student individually
       const savedAssessments: AssessmentRecord[] = [];
 
       for (const student of students) {
@@ -254,9 +253,7 @@ function ManualEntryContent() {
           createdAt: new Date().toISOString(),
         };
 
-        // Save to database
         const savedAssessment = await createAssessment(assessmentData);
-        // Add the database ID to the assessment data
         const assessmentWithId = {
           ...assessmentData,
           $id: savedAssessment.$id,
@@ -264,13 +261,10 @@ function ManualEntryContent() {
         savedAssessments.push(assessmentWithId);
       }
 
-      // Add to local state
       setSavedAssessments((prev) => [...savedAssessments, ...prev]);
 
-      // Reset form
       resetForm();
 
-      // Scroll to top to show the newly added assessment
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       console.log("Assessments saved:", savedAssessments);
@@ -287,9 +281,9 @@ function ManualEntryContent() {
       try {
         const answers = JSON.parse(assessment.assessment);
         return {
-          $id: assessment.$id, // Preserve the assessment ID
+          $id: assessment.$id,
           studentName: assessment.studentName,
-          emoji: "👤", // Use consistent emoji to avoid hydration issues
+          emoji: "👤",
           q1Answer: answers[0] || "",
           q2Answer: answers[1] || "",
           q3Answer: answers[2] || "",

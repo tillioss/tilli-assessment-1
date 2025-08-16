@@ -1,5 +1,4 @@
 import { account } from "./appwrite";
-import { ID } from "appwrite";
 
 export interface TeacherInfo {
   teacherName: string;

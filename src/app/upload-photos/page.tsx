@@ -54,20 +54,17 @@ function UploadPhotosContent() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Set up navbar
   useEffect(() => {
     setBackButton("/", "Back");
     return () => hideBackButton();
   }, [setBackButton, hideBackButton]);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Loading progress simulation
   useEffect(() => {
     if (isUploading) {
       setLoadingProgress(0);
@@ -123,7 +120,6 @@ function UploadPhotosContent() {
     multiple: true,
   });
 
-  // Cleanup camera on unmount
   useEffect(() => {
     return () => {
       if (cameraStream) {
@@ -132,7 +128,6 @@ function UploadPhotosContent() {
     };
   }, [cameraStream]);
 
-  // Ensure video element is properly set up when camera is shown
   useEffect(() => {
     if (showCamera && cameraStream && videoRef.current) {
       videoRef.current.srcObject = cameraStream;
@@ -209,14 +204,11 @@ function UploadPhotosContent() {
       const context = canvas.getContext("2d");
 
       if (context) {
-        // Set canvas size to match video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        // Draw video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Convert canvas to blob
         canvas.toBlob(
           (blob) => {
             if (blob) {
@@ -232,7 +224,6 @@ function UploadPhotosContent() {
 
               setUploadedFiles((prev) => [...prev, newFile]);
 
-              // Show success feedback using React state
               setCaptureFeedback(true);
               setTimeout(() => {
                 setCaptureFeedback(false);
@@ -253,7 +244,6 @@ function UploadPhotosContent() {
         return;
       }
 
-      // Save each student individually
       for (const student of result.students) {
         const assessmentData = {
           teacherId: user.$id,
@@ -279,7 +269,6 @@ function UploadPhotosContent() {
           createdAt: new Date().toISOString(),
         };
 
-        // Save to Appwrite database
         await createAssessment(assessmentData);
       }
 
@@ -301,7 +290,6 @@ function UploadPhotosContent() {
     setLoadingMessage("Preparing your photos for analysis...");
 
     try {
-      // Create FormData for file upload
       const formData = new FormData();
       uploadedFiles.forEach((fileObj) => {
         formData.append("image", fileObj.file);
@@ -319,14 +307,11 @@ function UploadPhotosContent() {
       if (response.ok) {
         const result = await response.json();
 
-        // Complete the progress
         setLoadingProgress(100);
         setLoadingMessage("Analysis complete! Preparing your results...");
 
-        // Small delay to show completion
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Assign emojis to students and ensure all questions are initialized
         const studentsWithEmojis = result.students.map(
           (student: StudentAssessment) => ({
             q1Answer: student.q1Answer || "",

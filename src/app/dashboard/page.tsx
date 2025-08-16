@@ -6,21 +6,18 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Camera, FileText } from "lucide-react";
 
-// Force dynamic rendering to avoid build-time auth context issues
 export const dynamic = "force-dynamic";
 
 function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Show loading while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
@@ -32,7 +29,6 @@ function Dashboard() {
     );
   }
 
-  // Don't render anything if not authenticated (will redirect)
   if (!isAuthenticated) {
     return null;
   }
