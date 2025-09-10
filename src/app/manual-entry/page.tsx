@@ -3,18 +3,21 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, CheckCircle, Edit, Star } from "lucide-react";
-import { rubricData } from "@/lib/rubric-data";
 import { Student, AssessmentRecord } from "@/types";
 import StarRating from "@/components/StarRating";
 import { useNavbar } from "@/components/NavbarContext";
 import { useAuth } from "@/components/AuthProvider";
 import { createAssessment, getAssessments } from "@/lib/appwrite";
 import EditAssessmentModal from "@/components/EditAssessmentModal";
+import { useTranslation } from "react-i18next";
+import { useRubricData } from "@/lib/useRubricData";
 
 function ManualEntryContent() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { setBackButton, hideBackButton } = useNavbar();
+  const { t } = useTranslation();
+  const rubricData = useRubricData();
 
   const [students, setStudents] = useState<Student[]>([
     {
@@ -78,7 +81,9 @@ function ManualEntryContent() {
       <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-center">Loading...</p>
+          <p className="text-gray-600 mt-4 text-center">
+            {t("common.loading")}
+          </p>
         </div>
       </div>
     );
@@ -203,13 +208,13 @@ function ManualEntryContent() {
 
   const handleAddStudent = async () => {
     if (!user?.$id) {
-      alert("Please log in to save assessments");
+      alert(t("manualEntry.pleaseLogIn"));
       return;
     }
 
     const hasEmptyStudents = students.some((student) => !student.studentName);
     if (hasEmptyStudents) {
-      alert("Please fill in all student names");
+      alert(t("manualEntry.fillInAllNames"));
       return;
     }
 
@@ -217,7 +222,7 @@ function ManualEntryContent() {
       (student) => !isStudentFullyGraded(student)
     );
     if (hasIncompleteGrading) {
-      alert("Please complete grading for all students");
+      alert(t("manualEntry.completeGrading"));
       return;
     }
 
@@ -270,7 +275,7 @@ function ManualEntryContent() {
       console.log("Assessments saved:", savedAssessments);
     } catch (error) {
       console.error("Error creating assessment:", error);
-      alert("Error creating assessment. Please try again.");
+      alert(t("manualEntry.errorCreatingAssessment"));
     } finally {
       setIsSubmitting(false);
     }
@@ -319,7 +324,7 @@ function ManualEntryContent() {
           <div className="mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
-              Saved Assessments ({displayStudents.length})
+              {t("manualEntry.savedAssessments")} ({displayStudents.length})
             </h2>
           </div>
 
@@ -329,7 +334,7 @@ function ManualEntryContent() {
               <div className="text-center py-8">
                 <div className="w-6 h-6 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
                 <p className="text-sm text-gray-600 mt-2">
-                  Loading assessments...
+                  {t("manualEntry.loadingAssessments")}
                 </p>
               </div>
             ) : displayStudents.length > 0 ? (
@@ -468,7 +473,7 @@ function ManualEntryContent() {
             ) : (
               <div className="text-center py-8">
                 <p className="text-sm text-gray-600">
-                  No saved assessments found. Add your first student below.
+                  {t("manualEntry.noSavedAssessments")}
                 </p>
               </div>
             )}
@@ -480,12 +485,11 @@ function ManualEntryContent() {
           <div className="text-center mb-6">
             <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center justify-center">
               <Star className="w-5 h-5 text-yellow-500 mr-2" />
-              Understanding Star Ratings
+              {t("manualEntry.understandingStarRatings")}
               <Star className="w-5 h-5 text-yellow-500 ml-2" />
             </h3>
             <p className="text-sm text-gray-600">
-              Use the star ratings below to assess student performance for each
-              criterion
+              {t("manualEntry.useStarRatings")}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -528,7 +532,7 @@ function ManualEntryContent() {
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-              Add New Student Assessment
+              {t("manualEntry.addNewStudentAssessment")}
             </h2>
           </div>
 
@@ -543,7 +547,7 @@ function ManualEntryContent() {
                     onClick={() => removeStudent(studentIndex)}
                     className="text-red-600 hover:text-red-800 text-sm"
                   >
-                    Remove
+                    {t("manualEntry.remove")}
                   </button>
                 )}
               </div>
@@ -552,7 +556,7 @@ function ManualEntryContent() {
               <div className="mb-4 sm:mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <span className="text-xl mr-2">{student.emoji}</span>
-                  Student Name *
+                  {t("manualEntry.studentName")} *
                 </label>
                 <input
                   type="text"
@@ -561,7 +565,7 @@ function ManualEntryContent() {
                     updateStudent(studentIndex, "studentName", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
-                  placeholder="Enter student name"
+                  placeholder={t("manualEntry.enterStudentName")}
                   required
                 />
               </div>
@@ -630,11 +634,11 @@ function ManualEntryContent() {
             {isSubmitting ? (
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Saving Assessment...</span>
+                <span>{t("manualEntry.savingAssessment")}</span>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                Save Student Report
+                {t("manualEntry.saveStudentReport")}
               </div>
             )}
           </button>

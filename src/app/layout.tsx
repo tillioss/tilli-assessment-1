@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { NavbarProvider } from "@/components/NavbarContext";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
+import I18nProvider from "@/components/I18nProvider";
 
 export const metadata: Metadata = {
   title: "Tilli Assessment App",
@@ -26,12 +27,14 @@ export default function RootLayout({
         <meta name="theme-color" content="#4F86E2" />
       </head>
       <body className="font-sans">
-        <AuthProvider>
-          <NavbarProvider>
-            <ConditionalNavbar />
-            <div className="min-h-screen bg-gray-50">{children}</div>
-          </NavbarProvider>
-        </AuthProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <NavbarProvider>
+              <ConditionalNavbar />
+              <div className="min-h-screen bg-gray-50">{children}</div>
+            </NavbarProvider>
+          </AuthProvider>
+        </I18nProvider>
       </body>
     </html>
   );

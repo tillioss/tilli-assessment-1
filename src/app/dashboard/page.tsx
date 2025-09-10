@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Camera, FileText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const dynamic = "force-dynamic";
 
 function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -23,7 +25,9 @@ function Dashboard() {
       <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-center">Loading...</p>
+          <p className="text-gray-600 mt-4 text-center">
+            {t("common.loading")}
+          </p>
         </div>
       </div>
     );
@@ -39,16 +43,19 @@ function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
-            Assessment Dashboard
+            {t("dashboard.title")}
           </h2>
           <p className="text-base sm:text-lg text-gray-600">
-            Choose how you'd like to create student assessments
+            {t("dashboard.subtitle")}
           </p>
           {user?.teacherInfo && (
             <div className="mt-4 text-sm text-gray-500">
-              Welcome, {user.teacherInfo.teacherName} •{" "}
-              {user.teacherInfo.school} • {user.teacherInfo.grade} Section{" "}
-              {user.teacherInfo.section}
+              {t("dashboard.welcomeMessage", {
+                teacherName: user.teacherInfo.teacherName,
+                school: user.teacherInfo.school,
+                grade: user.teacherInfo.grade,
+                section: user.teacherInfo.section,
+              })}
             </div>
           )}
         </div>
@@ -61,7 +68,7 @@ function Dashboard() {
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center">
                     <Sparkles className="w-3 h-3 mr-1" />
-                    RECOMMENDED
+                    {t("common.recommended")}
                   </div>
                 </div>
 
@@ -70,32 +77,36 @@ function Dashboard() {
                     <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                    AI Photo Scan
+                    {t("dashboard.aiPhotoScan.title")}
                   </h3>
                   <p className="text-sm text-green-600 font-medium mb-2">
-                    Fast & Accurate
+                    {t("common.fastAndAccurate")}
                   </p>
                   <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
-                    Simply take photos of your rubric sheets and let AI
-                    automatically extract all student data. Saves time and
-                    reduces manual errors.
+                    {t("dashboard.aiPhotoScan.description")}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                     <div className="flex items-center space-x-2 text-xs text-gray-600">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>1-2 minutes processing</span>
+                      <span>
+                        {t("dashboard.aiPhotoScan.features.processingTime")}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2 text-xs text-gray-600">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>99% accuracy rate</span>
+                      <span>
+                        {t("dashboard.aiPhotoScan.features.accuracy")}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2 text-xs text-gray-600">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>No manual typing</span>
+                      <span>
+                        {t("dashboard.aiPhotoScan.features.noTyping")}
+                      </span>
                     </div>
                   </div>
                   <div className="text-xs sm:text-sm text-gray-500 font-medium">
-                    Start AI Scan →
+                    {t("dashboard.aiPhotoScan.cta")}
                   </div>
                 </div>
               </div>
@@ -117,22 +128,22 @@ function Dashboard() {
                     </div>
                     <div>
                       <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
-                        Manual Entry
+                        {t("dashboard.manualEntry.title")}
                       </h3>
                       <p className="text-sm text-gray-600 font-medium">
-                        Traditional Method
+                        {t("common.traditionalMethod")}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <p className="text-sm sm:text-base text-gray-700 mb-4">
-                  Enter student assessment data manually using the rubric form
+                  {t("dashboard.manualEntry.description")}
                 </p>
 
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-[#4F86E2] font-medium">
-                    Fill form manually →
+                    {t("dashboard.manualEntry.cta")}
                   </div>
                 </div>
               </div>

@@ -10,6 +10,7 @@ A Next.js application for teachers to manage student assessment rubrics with pho
 - **Mobile Authentication**: Appwrite-based mobile authentication for teachers
 - **Mobile-First Design**: Fully responsive interface optimized for mobile devices
 - **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
+- **Internationalization**: Full Arabic and English language support with RTL layout
 
 ## Tech Stack
 
@@ -19,6 +20,7 @@ A Next.js application for teachers to manage student assessment rubrics with pho
 - **UI Components**: Lucide React icons
 - **Form Handling**: React Hook Form with Zod validation
 - **File Upload**: React Dropzone
+- **Internationalization**: react-i18next with Arabic and English support
 
 ## Project Structure
 
@@ -42,13 +44,17 @@ tilli-assessment-1/
 │   │   ├── AuthProvider.tsx      # Authentication context
 │   │   ├── LoginForm.tsx         # Mobile authentication form
 │   │   ├── ProtectedRoute.tsx    # Route protection
-│   │   └── StarRating.tsx        # Star rating component
+│   │   ├── StarRating.tsx        # Star rating component
+│   │   └── LanguageSwitcher.tsx  # Language switcher component
 │   ├── lib/                      # Utility libraries
 │   │   ├── appwrite.ts           # Appwrite client configuration
 │   │   ├── auth.ts               # Authentication utilities
-│   │   ├── rubric-data.ts        # Rubric structure data
 │   │   ├── utils.ts              # Utility functions
-│   │   └── emoji-assignment.ts   # Emoji assignment utilities
+│   │   ├── emoji-assignment.ts   # Emoji assignment utilities
+│   │   └── i18n.ts               # Internationalization configuration
+│   ├── locales/                  # Translation files
+│   │   ├── en.json               # English translations
+│   │   └── ar.json               # Arabic translations
 │   └── types/                    # TypeScript type definitions
 │       └── index.ts
 ├── public/                       # Static assets
@@ -125,6 +131,48 @@ tilli-assessment-1/
 7. **Open your browser**
 
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Internationalization (i18n)
+
+The application supports multiple languages with full RTL (Right-to-Left) support for Arabic:
+
+### Supported Languages
+
+- **English (en)**: Default language with LTR layout
+- **Arabic (ar)**: Full RTL support with Arabic fonts
+
+### Language Features
+
+- **Language Switcher**: Globe icon in the navbar to switch between languages
+- **RTL Support**: Automatic layout direction switching for Arabic
+- **Arabic Fonts**: Noto Sans Arabic font for proper Arabic text rendering
+- **Persistent Language**: Language preference saved in localStorage
+- **Dynamic Content**: All text content dynamically translated
+
+### Translation Structure
+
+```json
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "login": {
+    "title": "Hello teacher! 👋",
+    "teacherName": "Teacher Name"
+  },
+  "dashboard": {
+    "title": "Assessment Dashboard",
+    "subtitle": "Choose how you'd like to create student assessments"
+  }
+}
+```
+
+### Adding New Languages
+
+1. Create a new translation file in `src/locales/`
+2. Add the language to the `LanguageSwitcher` component
+3. Update the i18n configuration in `src/lib/i18n.ts`
 
 ## Mobile-First Design
 

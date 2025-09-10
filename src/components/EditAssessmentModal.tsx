@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { X, Save } from "lucide-react";
-import { rubricData } from "@/lib/rubric-data";
 import { Student, AssessmentRecord } from "@/types";
 import StarRating from "@/components/StarRating";
 import { updateAssessment } from "@/lib/appwrite";
+import { useRubricData } from "@/lib/useRubricData";
 
 interface EditAssessmentModalProps {
   isOpen: boolean;
@@ -26,6 +26,7 @@ export default function EditAssessmentModal({
   const [originalStudent, setOriginalStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const rubricData = useRubricData();
 
   useEffect(() => {
     setIsMounted(true);

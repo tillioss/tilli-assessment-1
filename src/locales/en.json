@@ -1,0 +1,208 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "getStarted": "Get Started",
+    "welcome": "Welcome",
+    "recommended": "RECOMMENDED",
+    "fastAndAccurate": "Fast & Accurate",
+    "traditionalMethod": "Traditional Method"
+  },
+  "app": {
+    "title": "Tilli Assessment App",
+    "description": "Teacher assessment rubric scanning and manual entry application",
+    "logoAlt": "Tilli Assessment Logo",
+    "mascotAlt": "Tilli Mascot"
+  },
+  "navbar": {
+    "title": "Tilli Assessment"
+  },
+  "login": {
+    "title": "Hello teacher! 👋",
+    "teacherInfo": "Teacher Information",
+    "teacherName": "Teacher Name",
+    "teacherNamePlaceholder": "Enter your name",
+    "school": "School",
+    "selectSchool": "Select School",
+    "grade": "Grade",
+    "selectGrade": "Select Grade",
+    "section": "Section",
+    "selectSection": "Select Section",
+    "sectionPrefix": "Section",
+    "fillAllFields": "Please fill in all teacher information",
+    "loginFailed": "Failed to login. Please try again.",
+    "description": "Enter your information to begin using the assessment system"
+  },
+  "dashboard": {
+    "title": "Assessment Dashboard",
+    "subtitle": "Choose how you'd like to create student assessments",
+    "welcomeMessage": "Welcome, {{teacherName}} • {{school}} • {{grade}} Section {{section}}",
+    "aiPhotoScan": {
+      "title": "AI Photo Scan",
+      "description": "Simply take photos of your rubric sheets and let AI automatically extract all student data. Saves time and reduces manual errors.",
+      "features": {
+        "processingTime": "1-2 minutes processing",
+        "accuracy": "99% accuracy rate",
+        "noTyping": "No manual typing"
+      },
+      "cta": "Start AI Scan →"
+    },
+    "manualEntry": {
+      "title": "Manual Entry",
+      "description": "Enter student assessment data manually using the rubric form",
+      "cta": "Fill form manually →"
+    }
+  },
+  "schools": {
+    "avalonHeights": "Avalon Heights, Mumbai"
+  },
+  "grades": {
+    "grade1": "Grade 1"
+  },
+  "sections": {
+    "a": "A",
+    "b": "B",
+    "c": "C"
+  },
+  "uploadPhotos": {
+    "title": "Upload Rubric Photos",
+    "aiAnalysis": "AI Photo Analysis",
+    "aiDescription": "Our AI will automatically extract all student responses and scores from your rubric photos. Just upload clear photos and let the AI do the work for you!",
+    "takePhoto": "Take Photo",
+    "takePhotoDescription": "Use your mobile camera to capture rubric photos",
+    "uploadFiles": "Upload Files",
+    "uploadFilesDescription": "Select existing photos from your device",
+    "dragDropText": "Drag & drop photos here, or click to select files",
+    "supportedFormats": "Supports JPEG, PNG, WebP formats",
+    "dropFilesHere": "Drop the photos here...",
+    "uploadedPhotos": "Uploaded Photos",
+    "startAiAnalysis": "Start AI Analysis",
+    "processing": "Processing...",
+    "analyzingRubrics": "Analyzing Your Rubrics",
+    "usuallyTakesMinute": "This usually takes about 1 minute",
+    "whatsHappening": "What's happening?",
+    "aiAnalyzing": "AI is analyzing your rubric photos",
+    "extractingResponses": "Extracting student responses and scores",
+    "processingHandwriting": "Processing handwriting and marks",
+    "preparingResults": "Preparing detailed results for you",
+    "photosCaptured": "Photos Captured",
+    "takePhotosOfRubric": "Take photos of each rubric sheet. You can capture multiple photos.",
+    "startingCamera": "Starting camera...",
+    "cancel": "Cancel",
+    "capture": "Capture",
+    "photoCaptured": "Photo Captured!",
+    "done": "Done",
+    "closeCamera": "Close Camera",
+    "cameraAccessDenied": "Camera access denied. Please allow camera permissions.",
+    "noCameraFound": "No camera found on this device.",
+    "unableToAccessCamera": "Unable to access camera. Please check permissions.",
+    "pleaseUploadPhoto": "Please upload at least one photo",
+    "errorProcessingPhotos": "Error processing photos. Please try again.",
+    "failedToProcessPhotos": "Failed to process photos",
+    "preparingPhotos": "Preparing your photos for analysis...",
+    "analyzingStructure": "Analyzing rubric structure...",
+    "identifyingResponses": "Identifying student responses...",
+    "processingHandwritingMarks": "Processing handwriting and marks...",
+    "extractingData": "Extracting assessment data...",
+    "finalizingResults": "Finalizing results...",
+    "almostDone": "Almost done...",
+    "analysisComplete": "Analysis complete! Preparing your results..."
+  },
+  "manualEntry": {
+    "savedAssessments": "Saved Assessments",
+    "noSavedAssessments": "No saved assessments found. Add your first student below.",
+    "loadingAssessments": "Loading assessments...",
+    "understandingStarRatings": "Understanding Star Ratings",
+    "useStarRatings": "Use the star ratings below to assess student performance for each criterion",
+    "addNewStudentAssessment": "Add New Student Assessment",
+    "studentName": "Student Name",
+    "enterStudentName": "Enter student name",
+    "remove": "Remove",
+    "saveStudentReport": "Save Student Report",
+    "savingAssessment": "Saving Assessment...",
+    "pleaseLogIn": "Please log in to save assessments",
+    "fillInAllNames": "Please fill in all student names",
+    "completeGrading": "Please complete grading for all students",
+    "errorCreatingAssessment": "Error creating assessment. Please try again.",
+    "noNameEntered": "No name entered",
+    "fullyGraded": "✓ Fully graded",
+    "incomplete": "⚠ Incomplete",
+    "editAssessment": "Edit assessment"
+  },
+  "rubric": {
+    "ratingLevels": {
+      "0": "Never",
+      "1": "Beginner",
+      "2": "Growing",
+      "3": "Expert"
+    },
+    "skillCategories": {
+      "selfAwarenessSocialAwareness": "Self-Awareness, Social Awareness",
+      "selfAwareness": "Self Awareness",
+      "selfManagementMetacognition": "Self- Management, Metacognition",
+      "metacognitionCriticalThinking": "Metacognition, Critical Thinking",
+      "empathySocialAwareness": "Empathy, Social Awareness",
+      "empathyRelationshipSkills": "Empathy, Relationship Skills",
+      "responsibleDecisionMakingCriticalThinking": "Responsible Decision-Making, Critical Thinking",
+      "selfManagement": "Self-Management",
+      "selfManagementResponsibleDecisionMaking": "Self-Management, Responsible Decision-Making",
+      "metacognitionSelfAwareness": "Metacognition, Self-Awareness",
+      "metacognition": "Metacognition"
+    },
+    "criteria": {
+      "sa_1": {
+        "text": "The student can name and express how they or others feel.",
+        "example": "e.g. uses words like happy, sad, angry, excited"
+      },
+      "sa_2": {
+        "text": "The student can express their likes and dislikes.",
+        "example": "e.g. \"I like drawing,\" \"I don't want to play that\""
+      },
+      "sa_3": {
+        "text": "The student keeps trying even when a task is difficult.",
+        "example": "e.g. continues working on a puzzle or writing"
+      },
+      "sm_1": {
+        "text": "The student is able to ask for help when something is hard.",
+        "example": "e.g. says \"I need help,\" or asks a friend"
+      },
+      "sm_2": {
+        "text": "The student is able to recognize the emotions of others and respond kindly.",
+        "example": "e.g. helps a crying friend"
+      },
+      "sm_3": {
+        "text": "The student shows care when someone is hurt or sad.",
+        "example": "e.g. checks on them, offers a hug, says kind words"
+      },
+      "sm_4": {
+        "text": "The student is able to solve problems with peers peacefully.",
+        "example": "e.g. takes turns, talks it out"
+      },
+      "sm_5": {
+        "text": "The student is able to calm down when upset or excited.",
+        "example": "e.g. takes deep breaths, walks away, asks for a break"
+      },
+      "sm_6": {
+        "text": "The student can stop and think before acting.",
+        "example": "e.g. waits their turn, follows directions instead of rushing"
+      },
+      "sm_7": {
+        "text": "The student is aware of their strengths and areas they want to improve.",
+        "example": "e.g. \"I'm good at drawing...\""
+      },
+      "sm_8": {
+        "text": "The student can say what they want to learn or get better at.",
+        "example": "e.g. \"I want to read more books\""
+      }
+    }
+  }
+}

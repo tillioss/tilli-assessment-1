@@ -5,22 +5,22 @@ import { ArrowRight, User } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { TeacherInfo } from "@/lib/auth";
 import Image from "next/image";
-
-const schoolOptions = ["Avalon Heights, Mumbai"];
-
-const gradeOptions = ["Grade 1"];
-
-const sectionOptions = ["A", "B", "C"];
+import { useTranslation } from "react-i18next";
 
 export default function LoginForm() {
   const { login, isLoading } = useAuth();
+  const { t } = useTranslation();
   const [error, setError] = useState("");
   const [teacherInfo, setTeacherInfo] = useState<TeacherInfo>({
     teacherName: "",
-    school: schoolOptions[0],
-    grade: gradeOptions[0],
+    school: t("schools.avalonHeights"),
+    grade: t("grades.grade1"),
     section: "",
   });
+
+  const schoolOptions = [t("schools.avalonHeights")];
+  const gradeOptions = [t("grades.grade1")];
+  const sectionOptions = [t("sections.a"), t("sections.b"), t("sections.c")];
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ export default function LoginForm() {
       !teacherInfo.grade ||
       !teacherInfo.section
     ) {
-      setError("Please fill in all teacher information");
+      setError(t("login.fillAllFields"));
       return;
     }
 
@@ -41,7 +41,7 @@ export default function LoginForm() {
       await login(teacherInfo);
     } catch (error) {
       console.error("Login error:", error);
-      setError("Failed to login. Please try again.");
+      setError(t("login.loginFailed"));
     }
   };
 
@@ -51,7 +51,7 @@ export default function LoginForm() {
       <div className="flex justify-center mb-4">
         <Image
           src="/images/mascot/tilli.png"
-          alt="Tilli Mascot"
+          alt={t("app.mascotAlt")}
           width={80}
           height={80}
           className="rounded-full"
@@ -60,7 +60,7 @@ export default function LoginForm() {
       </div>
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Hello teacher! 👋
+          {t("login.title")}
         </h1>
       </div>
 
@@ -75,12 +75,12 @@ export default function LoginForm() {
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center">
             <User className="w-5 h-5 mr-2" />
-            Teacher Information
+            {t("login.teacherInfo")}
           </h2>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Teacher Name *
+              {t("login.teacherName")} *
             </label>
             <input
               type="text"
@@ -92,14 +92,14 @@ export default function LoginForm() {
                 }))
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
-              placeholder="Enter your name"
+              placeholder={t("login.teacherNamePlaceholder")}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              School *
+              {t("login.school")} *
             </label>
             <select
               value={teacherInfo.school}
@@ -112,7 +112,7 @@ export default function LoginForm() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
-              <option value="">Select School</option>
+              <option value="">{t("login.selectSchool")}</option>
               {schoolOptions.map((school) => (
                 <option key={school} value={school}>
                   {school}
@@ -124,7 +124,7 @@ export default function LoginForm() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Grade *
+                {t("login.grade")} *
               </label>
               <select
                 value={teacherInfo.grade}
@@ -137,7 +137,7 @@ export default function LoginForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
                 required
               >
-                <option value="">Select Grade</option>
+                <option value="">{t("login.selectGrade")}</option>
                 {gradeOptions.map((grade) => (
                   <option key={grade} value={grade}>
                     {grade}
@@ -148,7 +148,7 @@ export default function LoginForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Section *
+                {t("login.section")} *
               </label>
               <select
                 value={teacherInfo.section}
@@ -161,10 +161,10 @@ export default function LoginForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
                 required
               >
-                <option value="">Select Section</option>
+                <option value="">{t("login.selectSection")}</option>
                 {sectionOptions.map((section) => (
                   <option key={section} value={section}>
-                    Section {section}
+                    {t("login.sectionPrefix")} {section}
                   </option>
                 ))}
               </select>
@@ -181,7 +181,7 @@ export default function LoginForm() {
             <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           ) : (
             <>
-              <span>Get Started</span>
+              <span>{t("common.getStarted")}</span>
               <ArrowRight size={18} className="sm:w-5 sm:h-5" />
             </>
           )}
@@ -190,7 +190,7 @@ export default function LoginForm() {
 
       <div className="mt-6 text-center">
         <p className="text-xs sm:text-sm text-gray-500">
-          Enter your information to begin using the assessment system
+          {t("login.description")}
         </p>
       </div>
     </div>

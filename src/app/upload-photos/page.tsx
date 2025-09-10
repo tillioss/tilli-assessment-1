@@ -8,6 +8,7 @@ import { useNavbar } from "@/components/NavbarContext";
 import { useAuth } from "@/components/AuthProvider";
 import { getRandomEmoji } from "@/lib/emoji-assignment";
 import { createAssessment } from "@/lib/appwrite";
+import { useTranslation } from "react-i18next";
 
 interface UploadedFile {
   file: File;
@@ -42,6 +43,7 @@ function UploadPhotosContent() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { setBackButton, hideBackButton } = useNavbar();
+  const { t } = useTranslation();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -240,7 +242,7 @@ function UploadPhotosContent() {
   const handleSaveAssessment = async (result: ScanResult) => {
     try {
       if (!user?.$id) {
-        alert("Please log in to save assessments");
+        alert(t("manualEntry.pleaseLogIn"));
         return;
       }
 
@@ -275,13 +277,13 @@ function UploadPhotosContent() {
       router.push("/manual-entry");
     } catch (error) {
       console.error("Error saving assessment:", error);
-      alert("Error saving assessment. Please try again.");
+      alert(t("manualEntry.errorCreatingAssessment"));
     }
   };
 
   const handleSubmit = async () => {
     if (uploadedFiles.length === 0) {
-      alert("Please upload at least one photo");
+      alert(t("uploadPhotos.pleaseUploadPhoto"));
       return;
     }
 
@@ -337,11 +339,11 @@ function UploadPhotosContent() {
 
         await handleSaveAssessment(resultWithEmojis);
       } else {
-        throw new Error("Failed to process photos");
+        throw new Error(t("uploadPhotos.failedToProcessPhotos"));
       }
     } catch (error) {
       console.error("Error uploading photos:", error);
-      alert("Error processing photos. Please try again.");
+      alert(t("uploadPhotos.errorProcessingPhotos"));
     } finally {
       setIsUploading(false);
       setLoadingProgress(0);
@@ -354,7 +356,9 @@ function UploadPhotosContent() {
       <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-center">Loading...</p>
+          <p className="text-gray-600 mt-4 text-center">
+            {t("common.loading")}
+          </p>
         </div>
       </div>
     );
@@ -371,7 +375,7 @@ function UploadPhotosContent() {
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-              Upload Rubric Photos
+              {t("uploadPhotos.title")}
             </h2>
           </div>
 
@@ -382,12 +386,10 @@ function UploadPhotosContent() {
               </div>
               <div>
                 <h4 className="text-sm font-medium text-blue-900 mb-1">
-                  AI Photo Analysis
+                  {t("uploadPhotos.aiAnalysis")}
                 </h4>
                 <p className="text-xs text-blue-800">
-                  Our AI will automatically extract all student responses and
-                  scores from your rubric photos. Just upload clear photos and
-                  let the AI do the work for you!
+                  {t("uploadPhotos.aiDescription")}
                 </p>
               </div>
             </div>
@@ -493,10 +495,10 @@ function UploadPhotosContent() {
               >
                 <Smartphone className="w-8 h-8 sm:w-12 sm:h-12 text-[#4F86E2] mb-3" />
                 <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1">
-                  Take Photo
+                  {t("uploadPhotos.takePhoto")}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 text-center">
-                  Use your mobile camera to capture rubric photos
+                  {t("uploadPhotos.takePhotoDescription")}
                 </p>
               </button>
 
@@ -512,12 +514,12 @@ function UploadPhotosContent() {
                 <input {...getInputProps()} />
                 <Image className="w-8 h-8 sm:w-12 sm:h-12 text-green-500 mb-3" />
                 <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1">
-                  Upload Files
+                  {t("uploadPhotos.uploadFiles")}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 text-center">
                   {isDragActive
-                    ? "Drop files here..."
-                    : "Select existing photos from your device"}
+                    ? t("uploadPhotos.dropFilesHere")
+                    : t("uploadPhotos.uploadFilesDescription")}
                 </p>
               </div>
             </div>
@@ -537,15 +539,15 @@ function UploadPhotosContent() {
               <Camera className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
               {isDragActive ? (
                 <p className="text-[#4F86E2] text-sm sm:text-base">
-                  Drop the photos here...
+                  {t("uploadPhotos.dropFilesHere")}
                 </p>
               ) : (
                 <div>
                   <p className="text-sm sm:text-base text-gray-600 mb-2">
-                    Drag & drop photos here, or click to select files
+                    {t("uploadPhotos.dragDropText")}
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    Supports JPEG, PNG, WebP formats
+                    {t("uploadPhotos.supportedFormats")}
                   </p>
                 </div>
               )}
@@ -556,7 +558,7 @@ function UploadPhotosContent() {
           {uploadedFiles.length > 0 && (
             <div className="mt-6">
               <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-4">
-                Uploaded Photos ({uploadedFiles.length})
+                {t("uploadPhotos.uploadedPhotos")} ({uploadedFiles.length})
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {uploadedFiles.map((fileObj) => (
@@ -592,12 +594,12 @@ function UploadPhotosContent() {
             {isUploading ? (
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Processing...</span>
+                <span>{t("uploadPhotos.processing")}</span>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
                 <Sparkles size={18} className="sm:w-5 sm:h-5" />
-                <span>Start AI Analysis</span>
+                <span>{t("uploadPhotos.startAiAnalysis")}</span>
               </div>
             )}
           </button>

@@ -4,6 +4,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LoginForm from "@/components/LoginForm";
+import { useTranslation } from "react-i18next";
 
 // Force dynamic rendering to avoid build-time auth context issues
 export const dynamic = "force-dynamic";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
@@ -23,7 +25,9 @@ export default function HomePage() {
       <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-center">Loading...</p>
+          <p className="text-gray-600 mt-4 text-center">
+            {t("common.loading")}
+          </p>
         </div>
       </div>
     );
