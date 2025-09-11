@@ -6,6 +6,7 @@ import { useAuth } from "./AuthProvider";
 import { TeacherInfo } from "@/lib/auth";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function LoginForm() {
   const { login, isLoading } = useAuth();
@@ -46,7 +47,12 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg">
+    <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg relative">
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 bg-[#4F86E2] rounded-lg shadow-md p-1">
+        <LanguageSwitcher />
+      </div>
+
       {/* Mascot above title */}
       <div className="flex justify-center mb-4">
         <Image
