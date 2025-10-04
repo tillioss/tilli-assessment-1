@@ -12,6 +12,7 @@ export default function HomePage() {
 
   const handleConsentGiven = () => {
     setConsentGiven(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (!consentGiven) {

@@ -275,7 +275,7 @@ function ManualEntryContent() {
 
       setSavedAssessments((prev) => [...savedAssessments, ...prev]);
 
-      // resetForm();
+      resetForm();
 
       window.scrollTo({ top: 0, behavior: "smooth" });
 

@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight, Loader2, User } from "lucide-react";
 import { TeacherInfo } from "@/types";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { login } from "@/lib/appwrite";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const { t } = useTranslation();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [teacherInfo, setTeacherInfo] = useState<TeacherInfo>({
     school: t("schools.school1"),
@@ -38,23 +38,20 @@ export default function LoginForm() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
+    setLoading(true);
     try {
       await login(teacherInfo);
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       setError(t("login.loginFailed"));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg relative">
-      {/* Language Switcher */}
-      <div className="absolute top-4 right-4 bg-[#4F86E2] rounded-lg shadow-md p-1">
-        <LanguageSwitcher />
-      </div>
-
       {/* Mascot above title */}
       <div className="flex justify-center mb-4">
         <Image
@@ -98,7 +95,7 @@ export default function LoginForm() {
                   school: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
               <option value="">{t("login.selectSchool")}</option>
@@ -122,7 +119,7 @@ export default function LoginForm() {
                   grade: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
               <option value="">{t("login.selectGrade")}</option>
@@ -155,7 +152,7 @@ export default function LoginForm() {
                   gender: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
               <option value="">{t("login.selectGender")}</option>
@@ -183,7 +180,7 @@ export default function LoginForm() {
                     age: parseInt(e.target.value) || undefined,
                   }))
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 placeholder-gray-500"
                 placeholder={t("login.agePlaceholder")}
                 required
                 min="18"
@@ -203,7 +200,7 @@ export default function LoginForm() {
                     teachingExperience: parseInt(e.target.value) || undefined,
                   }))
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 placeholder-gray-500"
                 placeholder={t("login.teachingExperiencePlaceholder")}
                 required
                 min="0"
@@ -225,7 +222,7 @@ export default function LoginForm() {
                   education: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
               <option value="">{t("login.selectEducation")}</option>
@@ -252,7 +249,7 @@ export default function LoginForm() {
                   selTraining: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
               <option value="">{t("login.selectSelTraining")}</option>
@@ -333,7 +330,7 @@ export default function LoginForm() {
                   classSize: parseInt(e.target.value) || undefined,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 placeholder-gray-500"
               placeholder={t("login.classSizePlaceholder")}
               required
               min="1"
@@ -406,7 +403,7 @@ export default function LoginForm() {
                     resourcesOther: e.target.value,
                   }))
                 }
-                className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 placeholder-gray-500"
+                className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 placeholder-gray-500"
                 placeholder={t("login.resourcesOtherPlaceholder")}
               />
             )}
@@ -425,7 +422,7 @@ export default function LoginForm() {
                   resourcesSufficiency: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm sm:text-base text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
               <option value="">{t("login.selectSufficiency")}</option>
@@ -447,10 +444,17 @@ export default function LoginForm() {
 
         <button
           type="submit"
-          className="w-full flex items-center justify-center space-x-2 bg-[#4F86E2] text-white py-3 px-4 rounded-full hover:bg-[#3d6bc7] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
+          disabled={loading}
+          className="w-full flex items-center justify-center space-x-2 bg-[#82A4DE] text-white py-3 px-4 rounded-full hover:bg-[#3d6bc7] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
         >
-          <span>{t("common.getStarted")}</span>
-          <ArrowRight size={18} className="sm:w-5 sm:h-5" />
+          {loading ? (
+            <Loader2 size={18} className="sm:w-5 sm:h-5" />
+          ) : (
+            <>
+              <span>{t("common.getStarted")}</span>
+              <ArrowRight size={18} className="sm:w-5 sm:h-5" />
+            </>
+          )}
         </button>
       </form>
 
