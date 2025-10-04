@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
@@ -10,32 +9,8 @@ import { useTranslation } from "react-i18next";
 export const dynamic = "force-dynamic";
 
 function Dashboard() {
-  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/");
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-center">
-            {t("common.loading")}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-[#E1ECFF]">
@@ -48,16 +23,13 @@ function Dashboard() {
           <p className="text-base sm:text-lg text-gray-600">
             {t("dashboard.subtitle")}
           </p>
-          {user?.teacherInfo && (
-            <div className="mt-4 text-sm text-gray-500">
-              {t("dashboard.welcomeMessage", {
-                teacherName: user.teacherInfo.teacherName,
-                school: user.teacherInfo.school,
-                grade: user.teacherInfo.grade,
-                section: user.teacherInfo.section,
-              })}
-            </div>
-          )}
+
+          <div className="mt-4 text-sm text-gray-500">
+            {t("dashboard.welcomeMessage", {
+              school: t("login.school"),
+              grade: t("login.grade"),
+            })}
+          </div>
         </div>
 
         <div className="max-w-6xl mx-auto">

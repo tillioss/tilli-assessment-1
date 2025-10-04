@@ -1,11 +1,5 @@
-import { account } from "./appwrite";
-
-export interface TeacherInfo {
-  teacherName: string;
-  school: string;
-  grade: string;
-  section: string;
-}
+import { account, databases } from "./appwrite";
+import { TeacherInfo } from "@/types";
 
 export interface AuthUser {
   $id: string;
@@ -15,25 +9,53 @@ export interface AuthUser {
 }
 
 export class AuthService {
-  static async createAnonymousSession(
-    teacherInfo?: TeacherInfo
-  ): Promise<void> {
+  static async login(teacherInfo: TeacherInfo): Promise<void> {
     try {
-      await account.createAnonymousSession();
+      const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
+      const teachersCollectionId =
+        process.env.NEXT_PUBLIC_TEACHERS_COLLECTION_ID;
 
-      // Store teacher info in localStorage if provided
-      if (teacherInfo) {
-        localStorage.setItem("teacherInfo", JSON.stringify(teacherInfo));
+      if (!databaseId) {
+        throw new Error(
+          "Database ID not configured. Please set NEXT_PUBLIC_APPWRITE_DATABASE_ID in your environment variables."
+        );
       }
+
+      if (!teachersCollectionId) {
+        throw new Error(
+          "Teachers Collection ID not configured. Please set NEXT_PUBLIC_TEACHERS_COLLECTION_ID in your environment variables."
+        );
+      }
+
+      // Create teacher document in Appwrite
+      const teacherDoc = await databases.createDocument(
+        databaseId,
+        teachersCollectionId,
+        "unique()",
+        {
+          school: teacherInfo.school,
+          grade: teacherInfo.grade,
+          demographics: JSON.stringify(teacherInfo),
+          createdAt: new Date().toISOString(),
+        }
+      );
+
+      // Store session and teacher info in localStorage
+      localStorage.setItem("sessionId", teacherDoc.$id);
+      localStorage.setItem("teacherInfo", JSON.stringify(teacherInfo));
     } catch (error) {
-      console.error("Error creating anonymous session:", error);
+      console.error("Error creating teacher session:", error);
       throw error;
     }
   }
 
   static async getCurrentUser(): Promise<AuthUser | null> {
     try {
-      const user = await account.get();
+      // Check if there's an active session
+      const sessionId = localStorage.getItem("sessionId");
+      if (!sessionId) {
+        return null;
+      }
 
       // Get teacher info from localStorage
       const teacherInfoStr = localStorage.getItem("teacherInfo");
@@ -41,10 +63,13 @@ export class AuthService {
         ? JSON.parse(teacherInfoStr)
         : undefined;
 
+      if (!teacherInfo) {
+        return null;
+      }
+
       return {
-        $id: user.$id,
-        name: user.name,
-        email: user.email,
+        $id: sessionId,
+        name: "Teacher",
         teacherInfo,
       };
     } catch (error) {
@@ -53,19 +78,10 @@ export class AuthService {
     }
   }
 
-  static async deleteSession(sessionId: string): Promise<void> {
-    try {
-      await account.deleteSession(sessionId);
-    } catch (error) {
-      console.error("Error deleting session:", error);
-      throw error;
-    }
-  }
-
   static async logout(): Promise<void> {
     try {
-      await account.deleteSessions();
-      // Clear teacher info from localStorage
+      // Clear session and teacher info from localStorage
+      localStorage.removeItem("sessionId");
       localStorage.removeItem("teacherInfo");
     } catch (error) {
       console.error("Error logging out:", error);

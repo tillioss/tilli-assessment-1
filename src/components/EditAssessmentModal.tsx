@@ -6,13 +6,52 @@ import { Student, AssessmentRecord } from "@/types";
 import StarRating from "@/components/StarRating";
 import { updateAssessment } from "@/lib/appwrite";
 import { useRubricData } from "@/lib/useRubricData";
+import { useTranslation } from "react-i18next";
+
+const skillQuestionMap = {
+  self_awareness: ["q1Answer", "q2Answer"],
+  social_management: ["q8Answer", "q9Answer"],
+  social_awareness: ["q5Answer", "q6Answer"],
+  relationship_skills: ["q7Answer"],
+  responsible_decision_making: ["q9Answer"],
+  metacognition: ["q4Answer", "q10Answer", "q11Answer"],
+  empathy: ["q6Answer", "q5Answer", "q7Answer"],
+  critical_thinking: ["q3Answer", "q4Answer", "q9Answer"],
+};
+
+// Function to calculate skill scores based on student answers
+const calculateSkillScores = (student: Student) => {
+  const skillScores: { [key: string]: number } = {};
+
+  // Calculate score for each skill
+  Object.entries(skillQuestionMap).forEach(([skill, questionFields]) => {
+    let totalScore = 0;
+    let answeredQuestions = 0;
+
+    questionFields.forEach((questionField) => {
+      const answer = student[questionField as keyof Student];
+      if (answer && answer !== "") {
+        const score = parseInt(answer) + 1;
+        if (!isNaN(score)) {
+          totalScore += score;
+          answeredQuestions++;
+        }
+      }
+    });
+
+    skillScores[skill] =
+      answeredQuestions > 0 ? totalScore / questionFields.length : 0;
+  });
+
+  return skillScores;
+};
 
 interface EditAssessmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   assessment: AssessmentRecord | null;
   onSave: (updatedAssessment: AssessmentRecord) => void;
-  user: any;
+  teacherId: string;
 }
 
 export default function EditAssessmentModal({
@@ -20,8 +59,9 @@ export default function EditAssessmentModal({
   onClose,
   assessment,
   onSave,
-  user,
+  teacherId,
 }: EditAssessmentModalProps) {
+  const { t } = useTranslation();
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [originalStudent, setOriginalStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,9 +75,8 @@ export default function EditAssessmentModal({
   useEffect(() => {
     if (assessment && isOpen && isMounted) {
       try {
-        const answers = JSON.parse(assessment.assessment);
+        const answers = JSON.parse(assessment.answers);
         const student: Student = {
-          studentName: assessment.studentName,
           emoji: "👤", // Use a consistent emoji to avoid hydration issues
           q1Answer: answers[0] || "",
           q2Answer: answers[1] || "",
@@ -66,7 +105,7 @@ export default function EditAssessmentModal({
   };
 
   const handleSave = async () => {
-    if (!editingStudent || !assessment || !user?.$id) {
+    if (!editingStudent || !assessment || !teacherId) {
       return;
     }
 
@@ -78,14 +117,30 @@ export default function EditAssessmentModal({
     setIsSubmitting(true);
 
     try {
+      const skillScores = calculateSkillScores(editingStudent);
+
+      const questionScores = [
+        editingStudent.q1Answer,
+        editingStudent.q2Answer,
+        editingStudent.q3Answer,
+        editingStudent.q4Answer,
+        editingStudent.q5Answer,
+        editingStudent.q6Answer,
+        editingStudent.q7Answer,
+        editingStudent.q8Answer,
+        editingStudent.q9Answer,
+        editingStudent.q10Answer,
+        editingStudent.q11Answer,
+      ].map((answer) => (answer ? parseInt(answer) : 0));
+
+      const overallScore =
+        Object.values(skillScores).reduce((acc, score) => acc + score, 0) /
+        Object.keys(skillScores).length;
+
       const assessmentData = {
-        teacherId: user.$id,
-        teacherName: user?.teacherInfo?.teacherName || "Teacher",
-        school: user?.teacherInfo?.school || "School",
-        grade: user?.teacherInfo?.grade || "Grade",
-        section: user?.teacherInfo?.section || "Section",
-        studentName: editingStudent.studentName,
-        assessment: JSON.stringify([
+        teacherId: teacherId,
+        scores: JSON.stringify(questionScores),
+        answers: JSON.stringify([
           editingStudent.q1Answer,
           editingStudent.q2Answer,
           editingStudent.q3Answer,
@@ -98,7 +153,10 @@ export default function EditAssessmentModal({
           editingStudent.q10Answer,
           editingStudent.q11Answer,
         ]),
+        overallScore: overallScore,
+        skillScores: JSON.stringify(skillScores),
         isManualEntry: true,
+        testType: assessment.testType || "PRE",
       };
 
       await updateAssessment(assessment.$id, assessmentData);
@@ -112,7 +170,7 @@ export default function EditAssessmentModal({
       onClose();
     } catch (error) {
       console.error("Error updating assessment:", error);
-      alert("Error updating assessment. Please try again.");
+      alert(t("manualEntry.errorUpdatingAssessment"));
     } finally {
       setIsSubmitting(false);
     }
@@ -123,7 +181,6 @@ export default function EditAssessmentModal({
 
     // Compare all fields
     const fieldsToCompare: (keyof Student)[] = [
-      "studentName",
       "q1Answer",
       "q2Answer",
       "q3Answer",
@@ -144,9 +201,7 @@ export default function EditAssessmentModal({
 
   const handleClose = () => {
     if (hasUnsavedChanges()) {
-      const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to close without saving?"
-      );
+      const confirmed = window.confirm(t("manualEntry.unsavedChangesConfirm"));
       if (!confirmed) {
         return;
       }
@@ -171,7 +226,7 @@ export default function EditAssessmentModal({
         {/* Modal Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
-            Edit Student Assessment
+            {t("manualEntry.editStudentAssessment")}
           </h2>
           <button
             onClick={handleClose}
@@ -185,35 +240,10 @@ export default function EditAssessmentModal({
         {/* Modal Content */}
         <div className="p-6">
           <div className="border border-gray-200 rounded-lg p-6 mb-6">
-            {/* Student Name */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <span className="text-xl mr-2">{editingStudent.emoji}</span>
-                Student Name *
-              </label>
-              <input
-                type="text"
-                value={editingStudent.studentName}
-                onChange={(e) =>
-                  updateEditingStudent("studentName", e.target.value)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4F86E2] text-sm text-gray-900 placeholder-gray-500"
-                placeholder="Enter student name"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-
             {/* Assessment Criteria */}
             <div className="space-y-6">
               {rubricData.skillCategories.map((category, categoryIndex) => (
-                <div
-                  key={categoryIndex}
-                  className="border-l-4 border-blue-200 pl-4"
-                >
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                    {category.categoryName}
-                  </h4>
+                <div key={categoryIndex}>
                   <div className="space-y-4">
                     {category.criteria.map((criterion, criterionIndex) => {
                       const questionNumber =
@@ -275,12 +305,12 @@ export default function EditAssessmentModal({
             {isSubmitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Saving...</span>
+                <span>{t("manualEntry.saving")}</span>
               </>
             ) : (
               <>
                 <Save size={16} />
-                <span>Save Changes</span>
+                <span>{t("manualEntry.saveChanges")}</span>
               </>
             )}
           </button>

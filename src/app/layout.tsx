@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/components/AuthProvider";
 import { NavbarProvider } from "@/components/NavbarContext";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
 import I18nProvider from "@/components/I18nProvider";
@@ -28,12 +27,10 @@ export default function RootLayout({
       </head>
       <body className="font-sans">
         <I18nProvider>
-          <AuthProvider>
-            <NavbarProvider>
-              <ConditionalNavbar />
-              <div className="min-h-screen bg-gray-50">{children}</div>
-            </NavbarProvider>
-          </AuthProvider>
+          <NavbarProvider>
+            <ConditionalNavbar />
+            <div className="min-h-screen bg-gray-50">{children}</div>
+          </NavbarProvider>
         </I18nProvider>
       </body>
     </html>

@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import { X, Camera, Smartphone, Image, Clock, Sparkles } from "lucide-react";
 import { useNavbar } from "@/components/NavbarContext";
-import { useAuth } from "@/components/AuthProvider";
 import { getRandomEmoji } from "@/lib/emoji-assignment";
 import { createAssessment } from "@/lib/appwrite";
 import { useTranslation } from "react-i18next";
+import { AuthService } from "@/lib/auth";
+import { Student } from "@/types";
 
 interface UploadedFile {
   file: File;
@@ -39,11 +40,50 @@ interface ScanResult {
   teacherName: string;
 }
 
+const skillQuestionMap = {
+  self_awareness: ["q1Answer", "q2Answer"],
+  social_management: ["q8Answer", "q9Answer"],
+  social_awareness: ["q5Answer", "q6Answer"],
+  relationship_skills: ["q7Answer"],
+  responsible_decision_making: ["q9Answer"],
+  metacognition: ["q4Answer", "q10Answer", "q11Answer"],
+  empathy: ["q6Answer", "q5Answer", "q7Answer"],
+  critical_thinking: ["q3Answer", "q4Answer", "q9Answer"],
+};
+
+// Function to calculate skill scores based on student answers
+const calculateSkillScores = (student: Student) => {
+  const skillScores: { [key: string]: number } = {};
+
+  // Calculate score for each skill
+  Object.entries(skillQuestionMap).forEach(([skill, questionFields]) => {
+    let totalScore = 0;
+    let answeredQuestions = 0;
+
+    questionFields.forEach((questionField) => {
+      const answer = student[questionField as keyof Student];
+      if (answer && answer !== "") {
+        const score = parseInt(answer) + 1;
+        if (!isNaN(score)) {
+          totalScore += score;
+          answeredQuestions++;
+        }
+      }
+    });
+
+    skillScores[skill] =
+      answeredQuestions > 0 ? totalScore / questionFields.length : 0;
+  });
+
+  return skillScores;
+};
+
 function UploadPhotosContent() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading } = useAuth();
   const { setBackButton, hideBackButton } = useNavbar();
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const testType = searchParams.get("testType") || "PRE";
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -53,24 +93,32 @@ function UploadPhotosContent() {
   const [captureFeedback, setCaptureFeedback] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    setBackButton("/", "Back");
+    setBackButton("/dashboard", t("common.back"));
     return () => hideBackButton();
   }, [setBackButton, hideBackButton]);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/");
-    }
-  }, [isAuthenticated, isLoading, router]);
+    const loadUser = async () => {
+      try {
+        const user = await AuthService.getCurrentUser();
+        setCurrentUser(user);
+      } catch (error) {
+        console.error("Error loading user:", error);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   useEffect(() => {
     if (isUploading) {
       setLoadingProgress(0);
-      setLoadingMessage("Preparing your photos for analysis...");
+      setLoadingMessage(t("uploadPhotos.preparingPhotos"));
 
       const progressInterval = setInterval(() => {
         setLoadingProgress((prev) => {
@@ -85,12 +133,12 @@ function UploadPhotosContent() {
       const messageInterval = setInterval(() => {
         setLoadingMessage((prev) => {
           const messages = [
-            "Analyzing rubric structure...",
-            "Identifying student responses...",
-            "Processing handwriting and marks...",
-            "Extracting assessment data...",
-            "Finalizing results...",
-            "Almost done...",
+            t("uploadPhotos.analyzingStructure"),
+            t("uploadPhotos.identifyingResponses"),
+            t("uploadPhotos.processingHandwritingMarks"),
+            t("uploadPhotos.extractingData"),
+            t("uploadPhotos.finalizingResults"),
+            t("uploadPhotos.almostDone"),
           ];
           const currentIndex = messages.indexOf(prev);
           const nextIndex = (currentIndex + 1) % messages.length;
@@ -176,16 +224,14 @@ function UploadPhotosContent() {
       setIsCameraLoading(false);
       if (error instanceof Error) {
         if (error.name === "NotAllowedError") {
-          setCameraError(
-            "Camera access denied. Please allow camera permissions."
-          );
+          setCameraError(t("uploadPhotos.cameraAccessDenied"));
         } else if (error.name === "NotFoundError") {
-          setCameraError("No camera found on this device.");
+          setCameraError(t("uploadPhotos.noCameraFound"));
         } else {
-          setCameraError("Unable to access camera. Please check permissions.");
+          setCameraError(t("uploadPhotos.unableToAccessCamera"));
         }
       } else {
-        setCameraError("Unable to access camera. Please check permissions.");
+        setCameraError(t("uploadPhotos.unableToAccessCamera"));
       }
     }
   };
@@ -241,20 +287,49 @@ function UploadPhotosContent() {
 
   const handleSaveAssessment = async (result: ScanResult) => {
     try {
-      if (!user?.$id) {
-        alert(t("manualEntry.pleaseLogIn"));
-        return;
-      }
-
       for (const student of result.students) {
+        // Convert StudentAssessment to Student format for calculation
+        const studentForCalculation: Student = {
+          emoji: student.emoji || "👤",
+          q1Answer: student.q1Answer || "",
+          q2Answer: student.q2Answer || "",
+          q3Answer: student.q3Answer || "",
+          q4Answer: student.q4Answer || "",
+          q5Answer: student.q5Answer || "",
+          q6Answer: student.q6Answer || "",
+          q7Answer: student.q7Answer || "",
+          q8Answer: student.q8Answer || "",
+          q9Answer: student.q9Answer || "",
+          q10Answer: student.q10Answer || "",
+          q11Answer: student.q11Answer || "",
+        };
+
+        // Calculate skill scores for this student
+        const skillScores = calculateSkillScores(studentForCalculation);
+
+        // Calculate individual question scores
+        const questionScores = [
+          student.q1Answer,
+          student.q2Answer,
+          student.q3Answer,
+          student.q4Answer,
+          student.q5Answer,
+          student.q6Answer,
+          student.q7Answer,
+          student.q8Answer,
+          student.q9Answer,
+          student.q10Answer,
+          student.q11Answer,
+        ].map((answer) => (answer ? parseInt(answer) : 0));
+
+        const overallScore =
+          Object.values(skillScores).reduce((acc, score) => acc + score, 0) /
+          Object.keys(skillScores).length;
+
         const assessmentData = {
-          teacherId: user.$id,
-          teacherName: user?.teacherInfo?.teacherName || "Teacher",
-          school: user?.teacherInfo?.school || "School",
-          grade: user?.teacherInfo?.grade || "Grade",
-          section: user?.teacherInfo?.section || "Section",
-          studentName: student.studentName,
-          assessment: JSON.stringify([
+          teacherId: currentUser?.$id || "",
+          scores: JSON.stringify(questionScores),
+          answers: JSON.stringify([
             student.q1Answer,
             student.q2Answer,
             student.q3Answer,
@@ -267,8 +342,10 @@ function UploadPhotosContent() {
             student.q10Answer,
             student.q11Answer,
           ]),
+          overallScore: overallScore,
+          skillScores: JSON.stringify(skillScores),
           isManualEntry: false,
-          createdAt: new Date().toISOString(),
+          testType,
         };
 
         await createAssessment(assessmentData);
@@ -289,7 +366,7 @@ function UploadPhotosContent() {
 
     setIsUploading(true);
     setLoadingProgress(0);
-    setLoadingMessage("Preparing your photos for analysis...");
+    setLoadingMessage(t("uploadPhotos.preparingPhotos"));
 
     try {
       const formData = new FormData();
@@ -310,7 +387,7 @@ function UploadPhotosContent() {
         const result = await response.json();
 
         setLoadingProgress(100);
-        setLoadingMessage("Analysis complete! Preparing your results...");
+        setLoadingMessage(t("uploadPhotos.analysisComplete"));
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -350,23 +427,6 @@ function UploadPhotosContent() {
       setLoadingMessage("");
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#E1ECFF] flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <div className="w-8 h-8 border-2 border-[#4F86E2] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-center">
-            {t("common.loading")}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-[#E1ECFF]">
@@ -454,10 +514,10 @@ function UploadPhotosContent() {
                     }`}
                   >
                     {isCameraLoading
-                      ? "Loading..."
+                      ? t("common.loading")
                       : captureFeedback
-                      ? "Photo Captured!"
-                      : "Capture"}
+                      ? t("uploadPhotos.photoCaptured")
+                      : t("uploadPhotos.capture")}
                   </button>
                   <button
                     onClick={stopCamera}
@@ -565,7 +625,7 @@ function UploadPhotosContent() {
                   <div key={fileObj.id} className="relative group">
                     <img
                       src={fileObj.preview}
-                      alt="Preview"
+                      alt={t("uploadPhotos.preview")}
                       className="w-full h-24 sm:h-32 object-cover rounded-lg"
                     />
                     <button

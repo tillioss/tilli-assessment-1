@@ -40,12 +40,61 @@
     "sectionPrefix": "قسم",
     "fillAllFields": "يرجى ملء جميع معلومات المعلم",
     "loginFailed": "فشل في تسجيل الدخول. يرجى المحاولة مرة أخرى.",
-    "description": "أدخل معلوماتك لبدء استخدام نظام التقييم"
+    "description": "أدخل معلوماتك لبدء استخدام نظام التقييم",
+    "gender": "ما هو جنسك؟",
+    "genderMale": "ذكر",
+    "genderFemale": "أنثى",
+    "genderOther": "آخر",
+    "genderPreferNotToSay": "أفضل عدم الإفصاح",
+    "age": "كم عمرك؟",
+    "agePlaceholder": "أدخل عمرك",
+    "teachingExperience": "كم سنة قضيت في التدريس في المجموع؟",
+    "teachingExperiencePlaceholder": "أدخل سنوات الخبرة",
+    "education": "ما هو أعلى مستوى تعليمي حصلت عليه؟",
+    "educationNone": "لا شيء",
+    "educationPrimary": "الابتدائية",
+    "educationMiddle": "المتوسطة",
+    "educationHigh": "الثانوية",
+    "educationBachelor": "البكالوريوس",
+    "educationMaster": "الماجستير",
+    "educationDoctorate": "الدكتوراه",
+    "selTraining": "هل تلقيت تدريباً للمعلمين في التعلم الاجتماعي العاطفي أو الوظائف التنفيذية، وأي نوع؟",
+    "selTrainingNone": "لا شيء",
+    "selTrainingLimitedTheoretical": "محدود (1-2 جلسة، معظمها نظري)",
+    "selTrainingLimitedPractical": "محدود (1-2 جلسة، معظمها عملي)",
+    "selTrainingOngoingTheoretical": "تدريب مستمر/منظم (معظمه نظري)",
+    "selTrainingOngoingPractical": "تدريب مستمر/منظم (معظمه عملي)",
+    "selTrainingOngoingBalanced": "تدريب مستمر/منظم (مزيج متوازن)",
+    "multilingualClassroom": "هل تدرس في فصل متعدد اللغات؟",
+    "multilingualYes": "نعم",
+    "multilingualNo": "لا",
+    "classSize": "ما كان متوسط حجم الفصل في آخر سنة دراسية لك؟",
+    "classSizePlaceholder": "أدخل متوسط حجم الفصل",
+    "classroomResources": "ما هي الموارد المتاحة في الفصل الدراسي؟ (اختر كل ما ينطبق)",
+    "resourcesBooks": "الكتب",
+    "resourcesInternet": "الإنترنت",
+    "resourcesSmartphone": "الهاتف الذكي",
+    "resourcesLaptop": "الكمبيوتر المحمول/الكمبيوتر",
+    "resourcesProjector": "البروجكتر",
+    "resourcesSmartBoard": "السبورة الذكية",
+    "resourcesTeachingMaterials": "مواد التدريس (أدوات تعليمية، مخططات، إلخ)",
+    "resourcesOther": "أخرى",
+    "resourcesOtherPlaceholder": "يرجى التحديد",
+    "resourcesSufficiency": "ما مدى كفاية الموارد المتاحة في الفصل الدراسي لدعم تدريسك؟",
+    "sufficiencyNotSufficient": "غير كافية",
+    "sufficiencySomewhatSufficient": "كافية إلى حد ما",
+    "sufficiencySufficient": "كافية",
+    "sufficiencyVerySufficient": "كافية جداً",
+    "demographics": "البيانات الديموغرافية والخبرة",
+    "selectGender": "اختر الجنس",
+    "selectEducation": "اختر مستوى التعليم",
+    "selectSelTraining": "اختر نوع التدريب",
+    "selectSufficiency": "اختر مستوى الكفاية"
   },
   "dashboard": {
     "title": "لوحة تحكم التقييم",
     "subtitle": "اختر كيف تريد إنشاء تقييمات الطلاب",
-    "welcomeMessage": "مرحباً، {{teacherName}} • {{school}} • {{grade}} قسم {{section}}",
+    "welcomeMessage": "مرحباً، {{school}} • {{grade}} قسم {{section}}",
     "aiPhotoScan": {
       "title": "مسح الصور بالذكاء الاصطناعي",
       "description": "ببساطة التقط صوراً لأوراق التقييم الخاصة بك ودع الذكاء الاصطناعي يستخرج جميع بيانات الطلاب تلقائياً. يوفر الوقت ويقلل من الأخطاء اليدوية.",
@@ -63,7 +112,9 @@
     }
   },
   "schools": {
-    "avalonHeights": "أفالون هايتس، مومباي"
+    "school1": "المدرسة 1",
+    "school2": "المدرسة 2",
+    "school3": "المدرسة 3"
   },
   "grades": {
     "grade1": "الصف الأول"
@@ -115,7 +166,9 @@
     "extractingData": "استخراج بيانات التقييم...",
     "finalizingResults": "إنهاء النتائج...",
     "almostDone": "تقريباً انتهى...",
-    "analysisComplete": "اكتمل التحليل! إعداد النتائج الخاصة بك..."
+    "analysisComplete": "اكتمل التحليل! إعداد النتائج الخاصة بك...",
+    "preview": "معاينة",
+    "changeLanguage": "تغيير اللغة"
   },
   "manualEntry": {
     "savedAssessments": "التقييمات المحفوظة",
@@ -136,7 +189,21 @@
     "noNameEntered": "لم يتم إدخال اسم",
     "fullyGraded": "✓ تم التقييم بالكامل",
     "incomplete": "⚠ غير مكتمل",
-    "editAssessment": "تعديل التقييم"
+    "editAssessment": "تعديل التقييم",
+    "editStudentAssessment": "تعديل تقييم الطالب",
+    "saving": "جاري الحفظ...",
+    "saveChanges": "حفظ التغييرات",
+    "errorUpdatingAssessment": "خطأ في تحديث التقييم. يرجى المحاولة مرة أخرى.",
+    "unsavedChangesConfirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد الإغلاق دون حفظ؟"
+  },
+  "consent": {
+    "title": "عزيزي المعلم،",
+    "intro": "تم تصميم أداة التقييم هذه لتتبع تطور الطلاب بشكل منهجي عبر مجموعة من **كفاءات التعلم الاجتماعي العاطفي (SEL).**",
+    "description": "تتكون الأداة من **11 عنصر تقرير معلم** مصممة لمساعدتك في ملاحظة كيفية إظهار الطلاب لهذه المهارات في السياقات اليومية للفصل الدراسي. إنها ليست أداة تقييم أو تصنيف؛ بل هي طريقة منظمة لتوثيق إظهار المهارات وتحديد المجالات التي تحتاج إلى دعم ونمو إضافي.",
+    "confidentiality": "السرية:",
+    "privacy": "سيتم **إخفاء هوية** جميع بيانات الطلاب القابلة للتحديد (مثل: الاسم) قبل التحليل والنشر. لن يتم تخزين أو مشاركة أي معلومات شخصية قابلة للتحديد (مثل أسماء الطلاب أو أولياء الأمور).",
+    "conclusion": "تلعب ملاحظاتك دوراً حيوياً في بناء فهم أعمق لكيفية تطور المهارات الاجتماعية والعاطفية للطلاب، وفي تشكيل الممارسات القائمة على الأدلة التي تفيد جميع المتعلمين.",
+    "understand": "أفهم"
   },
   "rubric": {
     "ratingLevels": {

@@ -40,12 +40,61 @@
     "sectionPrefix": "Section",
     "fillAllFields": "Please fill in all teacher information",
     "loginFailed": "Failed to login. Please try again.",
-    "description": "Enter your information to begin using the assessment system"
+    "description": "Enter your information to begin using the assessment system",
+    "gender": "What is your gender?",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "genderOther": "Other",
+    "genderPreferNotToSay": "Prefer not to say",
+    "age": "How old are you?",
+    "agePlaceholder": "Enter your age",
+    "teachingExperience": "How many years have you been teaching in total?",
+    "teachingExperiencePlaceholder": "Enter years of experience",
+    "education": "What is your highest level of education?",
+    "educationNone": "None",
+    "educationPrimary": "Primary school",
+    "educationMiddle": "Middle school",
+    "educationHigh": "High school",
+    "educationBachelor": "Bachelor's",
+    "educationMaster": "Master's",
+    "educationDoctorate": "Doctorate",
+    "selTraining": "Have you received teacher training in SEL or EF, and what kind?",
+    "selTrainingNone": "None",
+    "selTrainingLimitedTheoretical": "Limited (1–2 sessions, mostly theoretical)",
+    "selTrainingLimitedPractical": "Limited (1–2 sessions, mostly practical)",
+    "selTrainingOngoingTheoretical": "Ongoing/structured training (mostly theoretical)",
+    "selTrainingOngoingPractical": "Ongoing/structured training (mostly practical)",
+    "selTrainingOngoingBalanced": "Ongoing/structured training (balanced mix)",
+    "multilingualClassroom": "Do you teach in a multilingual classroom?",
+    "multilingualYes": "Yes",
+    "multilingualNo": "No",
+    "classSize": "What was the average class size in your most recent year of teaching?",
+    "classSizePlaceholder": "Enter average class size",
+    "classroomResources": "Which classroom resources do you have access to? (Select all that apply)",
+    "resourcesBooks": "Books",
+    "resourcesInternet": "Internet",
+    "resourcesSmartphone": "Smartphone",
+    "resourcesLaptop": "Laptop/Computer",
+    "resourcesProjector": "Projector",
+    "resourcesSmartBoard": "Smart board",
+    "resourcesTeachingMaterials": "Teaching materials (manipulatives, charts, etc.)",
+    "resourcesOther": "Other",
+    "resourcesOtherPlaceholder": "Please specify",
+    "resourcesSufficiency": "How sufficient are your available classroom resources for supporting your teaching?",
+    "sufficiencyNotSufficient": "Not sufficient",
+    "sufficiencySomewhatSufficient": "Somewhat sufficient",
+    "sufficiencySufficient": "Sufficient",
+    "sufficiencyVerySufficient": "Very sufficient",
+    "demographics": "Demographics & Experience",
+    "selectGender": "Select Gender",
+    "selectEducation": "Select Education Level",
+    "selectSelTraining": "Select Training Type",
+    "selectSufficiency": "Select Sufficiency Level"
   },
   "dashboard": {
     "title": "Assessment Dashboard",
     "subtitle": "Choose how you'd like to create student assessments",
-    "welcomeMessage": "Welcome, {{teacherName}} • {{school}} • {{grade}} Section {{section}}",
+    "welcomeMessage": "Welcome, {{school}} • {{grade}} Section {{section}}",
     "aiPhotoScan": {
       "title": "AI Photo Scan",
       "description": "Simply take photos of your rubric sheets and let AI automatically extract all student data. Saves time and reduces manual errors.",
@@ -63,7 +112,9 @@
     }
   },
   "schools": {
-    "avalonHeights": "Avalon Heights, Mumbai"
+    "school1": "School 1",
+    "school2": "School 2",
+    "school3": "School 3"
   },
   "grades": {
     "grade1": "Grade 1"
@@ -115,7 +166,9 @@
     "extractingData": "Extracting assessment data...",
     "finalizingResults": "Finalizing results...",
     "almostDone": "Almost done...",
-    "analysisComplete": "Analysis complete! Preparing your results..."
+    "analysisComplete": "Analysis complete! Preparing your results...",
+    "preview": "Preview",
+    "changeLanguage": "Change language"
   },
   "manualEntry": {
     "savedAssessments": "Saved Assessments",
@@ -136,7 +189,21 @@
     "noNameEntered": "No name entered",
     "fullyGraded": "✓ Fully graded",
     "incomplete": "⚠ Incomplete",
-    "editAssessment": "Edit assessment"
+    "editAssessment": "Edit assessment",
+    "editStudentAssessment": "Edit Student Assessment",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "errorUpdatingAssessment": "Error updating assessment. Please try again.",
+    "unsavedChangesConfirm": "You have unsaved changes. Are you sure you want to close without saving?"
+  },
+  "consent": {
+    "title": "Dear Teacher,",
+    "intro": "This assessment tool has been designed to systematically capture students' development across a range of **social-emotional learning (SEL) competencies.**",
+    "description": "The tool consists of **11 teacher-report items** intended to help you observe how students demonstrate these skills in everyday classroom contexts. It is not a grading or evaluative tool; rather, it is a structured way to document skill demonstration and identify areas for further support and growth.",
+    "confidentiality": "Confidentiality:",
+    "privacy": "All identifiable student data (i.e: name) collected will be **anonymized** before analysis and dissemination. No personally identifiable information (such as student or parent names) will be stored or shared.",
+    "conclusion": "Your observations play a vital role in building a deeper understanding of how students develop social-emotional skills, and in shaping evidence-based practices that benefit all learners.",
+    "understand": "I Understand"
   },
   "rubric": {
     "ratingLevels": {

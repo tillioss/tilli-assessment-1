@@ -1,5 +1,4 @@
 export interface Student {
-  studentName: string;
   emoji: string;
   q1Answer: string;
   q2Answer: string;
@@ -15,7 +14,6 @@ export interface Student {
 }
 
 export interface RubricScanResponse {
-  teacherName: string;
   school: string;
   grade: string;
   date: string;
@@ -48,12 +46,25 @@ export interface RubricData {
 export interface AssessmentRecord {
   $id?: string;
   teacherId: string;
-  teacherName: string;
+  answers: string;
+  scores: string;
+  overallScore: number;
+  skillScores: string;
+  isManualEntry: boolean;
+  testType: string;
+}
+
+export interface TeacherInfo {
   school: string;
   grade: string;
-  section: string;
-  studentName: string;
-  assessment: string;
-  isManualEntry: boolean;
-  createdAt: string;
+  gender?: string;
+  age?: number;
+  teachingExperience?: number;
+  education?: string;
+  selTraining?: string;
+  multilingualClassroom?: boolean;
+  classSize?: number;
+  classroomResources?: string[];
+  resourcesOther?: string;
+  resourcesSufficiency?: string;
 }
