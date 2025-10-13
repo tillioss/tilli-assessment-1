@@ -6,7 +6,7 @@ import { CheckCircle, Edit, Star } from "lucide-react";
 import { Student, AssessmentRecord } from "@/types";
 import StarRating from "@/components/StarRating";
 import { useNavbar } from "@/components/NavbarContext";
-import { createAssessment, getAssessments } from "@/lib/appwrite";
+import { createAssessment, getAssessments, updateScores } from "@/lib/appwrite";
 import EditAssessmentModal from "@/components/EditAssessmentModal";
 import { useTranslation } from "react-i18next";
 import { useRubricData } from "@/lib/useRubricData";
@@ -53,6 +53,8 @@ function ManualEntryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const testType = searchParams.get("testType") || "PRE";
+  const school = searchParams.get("school") || "test";
+  const grade = searchParams.get("grade") || "test";
   const { setBackButton, hideBackButton } = useNavbar();
   const { t } = useTranslation();
   const rubricData = useRubricData();
@@ -86,7 +88,7 @@ function ManualEntryContent() {
   useEffect(() => {
     setBackButton("/dashboard", t("common.back"));
     return () => hideBackButton();
-  }, [setBackButton, hideBackButton]);
+  }, [setBackButton, hideBackButton, t]);
 
   useEffect(() => {
     setCurrentUser(localStorage.getItem("sessionId") ?? null);
@@ -266,6 +268,14 @@ function ManualEntryContent() {
         };
 
         const savedAssessment = await createAssessment(assessmentData);
+        await updateScores({
+          skillScores: skillScores,
+          school: school,
+          grade: grade,
+          assessment: "teacher_report",
+          overallScore: overallScore,
+          testType: testType,
+        });
         const assessmentWithId = {
           ...assessmentData,
           $id: savedAssessment.$id,
@@ -278,11 +288,8 @@ function ManualEntryContent() {
       resetForm();
 
       window.scrollTo({ top: 0, behavior: "smooth" });
-
-      console.log("Assessments saved:", savedAssessments);
     } catch (error) {
       console.error("Error creating assessment:", error);
-      alert(t("manualEntry.errorCreatingAssessment"));
     } finally {
       setIsSubmitting(false);
     }

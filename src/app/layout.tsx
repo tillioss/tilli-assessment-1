@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { NavbarProvider } from "@/components/NavbarContext";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
@@ -26,12 +27,14 @@ export default function RootLayout({
         <meta name="theme-color" content="#4F86E2" />
       </head>
       <body className="font-sans">
-        <I18nProvider>
-          <NavbarProvider>
-            <ConditionalNavbar />
-            <div className="min-h-screen bg-gray-50">{children}</div>
-          </NavbarProvider>
-        </I18nProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <I18nProvider>
+            <NavbarProvider>
+              <ConditionalNavbar />
+              <div className="min-h-screen bg-gray-50">{children}</div>
+            </NavbarProvider>
+          </I18nProvider>
+        </Suspense>
       </body>
     </html>
   );

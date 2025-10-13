@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { login } from "@/lib/appwrite";
 import { useRouter } from "next/navigation";
+import i18n from "@/lib/i18n";
 
 export default function LoginForm() {
   const { t } = useTranslation();
@@ -40,8 +41,31 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
     try {
-      await login(teacherInfo);
-      router.push("/dashboard");
+      // Get English translations for school and grade
+      const getEnglishValue = (currentValue: string, prefix: string) => {
+        // Find the translation key by checking which key matches the current value
+        const keys =
+          prefix === "schools" ? ["school1", "school2", "school3"] : ["grade1"];
+        for (const key of keys) {
+          if (t(`${prefix}.${key}`) === currentValue) {
+            // Get the English translation
+            return i18n.t(`${prefix}.${key}`, { lng: "en" });
+          }
+        }
+        return currentValue; // fallback to current value
+      };
+
+      const schoolEn = getEnglishValue(teacherInfo.school, "schools");
+      const gradeEn = getEnglishValue(teacherInfo.grade, "grades");
+
+      await login({ ...teacherInfo, school: schoolEn, grade: gradeEn });
+
+      // Navigate with query params
+      router.push(
+        `/dashboard?school=${encodeURIComponent(
+          schoolEn
+        )}&grade=${encodeURIComponent(gradeEn)}`
+      );
     } catch (error) {
       console.error("Login error:", error);
       setError(t("login.loginFailed"));
@@ -183,7 +207,6 @@ export default function LoginForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 placeholder-gray-500"
                 placeholder={t("login.agePlaceholder")}
                 required
-                min="18"
                 max="100"
               />
             </div>

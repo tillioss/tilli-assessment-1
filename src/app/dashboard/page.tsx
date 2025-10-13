@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Camera, FileText } from "lucide-react";
@@ -10,7 +10,17 @@ export const dynamic = "force-dynamic";
 
 function Dashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
+
+  const school = searchParams.get("school") || "";
+  const grade = searchParams.get("grade") || "";
+  const queryString =
+    school && grade
+      ? `?school=${encodeURIComponent(school)}&grade=${encodeURIComponent(
+          grade
+        )}`
+      : "";
 
   return (
     <div className="min-h-screen bg-[#E1ECFF]">
@@ -35,7 +45,7 @@ function Dashboard() {
         <div className="max-w-6xl mx-auto">
           {/* AI Photo Scan Option */}
           <div className="mb-8">
-            <Link href="/upload-photos">
+            <Link href={`/upload-photos${queryString}`}>
               <div className="bg-white rounded-lg shadow-md p-6 sm:p-8 hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-gray-200 relative">
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center">
@@ -91,7 +101,7 @@ function Dashboard() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -translate-y-16 translate-x-16 opacity-20"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-100 rounded-full translate-y-12 -translate-x-12 opacity-20"></div>
 
-            <Link href="/manual-entry">
+            <Link href={`/manual-entry${queryString}`}>
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
