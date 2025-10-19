@@ -177,8 +177,8 @@ export const deleteAssessment = async (assessmentId: string) => {
 };
 
 const getLevel = (value: number) => {
-  if (value < 1.5) return "beginner";
-  if (value < 2.4) return "growth";
+  if (value < 1.66) return "beginner";
+  if (value < 3) return "growth";
   return "expert";
 };
 

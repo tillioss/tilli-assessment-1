@@ -239,11 +239,11 @@ function ManualEntryContent() {
           student.q9Answer,
           student.q10Answer,
           student.q11Answer,
-        ].map((answer) => (answer ? parseInt(answer) : 0));
+        ].map((answer) => (answer ? parseInt(answer) + 1 : 0));
 
         const overallScore =
-          Object.values(skillScores).reduce((acc, score) => acc + score, 0) /
-          Object.keys(skillScores).length;
+          questionScores.reduce((acc, score) => acc + score, 0) /
+          questionScores.length;
 
         const assessmentData: AssessmentRecord = {
           teacherId: currentUser || "",
