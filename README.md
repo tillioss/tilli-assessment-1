@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/tillioss/tilli-assessment-1/badge.svg?branch=main)](https://coveralls.io/github/tillioss/tilli-assessment-1?branch=main)
+
 # Tilli Assessment App
 
 A Next.js application for teachers to manage student assessment rubrics with photo scanning and manual entry capabilities. Built with a mobile-first responsive design.
