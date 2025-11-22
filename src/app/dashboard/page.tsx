@@ -33,13 +33,6 @@ function Dashboard() {
           <p className="text-base sm:text-lg text-gray-600">
             {t("dashboard.subtitle")}
           </p>
-
-          <div className="mt-4 text-sm text-gray-500">
-            {t("dashboard.welcomeMessage", {
-              school: t("login.school"),
-              grade: t("login.grade"),
-            })}
-          </div>
         </div>
 
         <div className="max-w-6xl mx-auto">
