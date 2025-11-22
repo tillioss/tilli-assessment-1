@@ -40,6 +40,8 @@ export const login = async (teacherInfo: TeacherInfo) => {
       "unique()",
       {
         school: teacherInfo.school,
+        section: teacherInfo.section,
+        zone: teacherInfo.zone,
         grade: teacherInfo.grade,
         demographics: JSON.stringify(teacherInfo),
       }

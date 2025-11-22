@@ -55,6 +55,8 @@ export interface AssessmentRecord {
 }
 
 export interface TeacherInfo {
+  zone: string;
+  section: string;
   school: string;
   grade: string;
   gender?: string;

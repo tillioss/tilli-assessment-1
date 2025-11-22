@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { login } from "@/lib/appwrite";
 import { useRouter } from "next/navigation";
 import i18n from "@/lib/i18n";
+import enData from "@/locales/en.json";
+import arData from "@/locales/ar.json";
 
 export default function LoginForm() {
   const { t } = useTranslation();
@@ -15,7 +17,9 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [teacherInfo, setTeacherInfo] = useState<TeacherInfo>({
-    school: t("schools.school1"),
+    zone: "",
+    section: "",
+    school: "School 1",
     grade: t("grades.grade1"),
     gender: "",
     age: undefined,
@@ -29,12 +33,36 @@ export default function LoginForm() {
     resourcesSufficiency: "",
   });
 
-  const schoolOptions = [
-    t("schools.school1"),
-    t("schools.school2"),
-    t("schools.school3"),
-  ];
+  const data: any = i18n.language === "ar" ? arData : enData;
+
+  const handleZoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const zone = e.target.value;
+
+    setTeacherInfo((prev) => ({
+      ...prev,
+      zone,
+      school: "",
+    }));
+  };
+
+  const schoolOptions = teacherInfo.zone
+    ? data.zonesToSchools[teacherInfo.zone]
+    : [];
+
   const gradeOptions = [t("grades.grade1")];
+  const sectionOptions = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+  ];
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,15 +83,14 @@ export default function LoginForm() {
         return currentValue; // fallback to current value
       };
 
-      const schoolEn = getEnglishValue(teacherInfo.school, "schools");
       const gradeEn = getEnglishValue(teacherInfo.grade, "grades");
 
-      await login({ ...teacherInfo, school: schoolEn, grade: gradeEn });
+      await login({ ...teacherInfo, grade: gradeEn });
 
       // Navigate with query params
       router.push(
         `/dashboard?school=${encodeURIComponent(
-          schoolEn
+          teacherInfo.school
         )}&grade=${encodeURIComponent(gradeEn)}`
       );
     } catch (error) {
@@ -107,10 +134,36 @@ export default function LoginForm() {
             {t("login.teacherInfo")}
           </h2>
 
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("login.zone")} *
+            </label>
+
+            <select
+              value={teacherInfo.zone}
+              onChange={handleZoneChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md 
+                     focus:outline-none focus:ring-2 focus:ring-[#82A4DE] 
+                     text-sm sm:text-base text-gray-900 bg-white"
+              required
+            >
+              <option value="">
+                {i18n.language === "ar" ? "اختر المنطقة" : "Select Zone"}
+              </option>
+
+              {Object.entries(data.zones).map(([zoneId, zoneName]) => (
+                <option key={zoneId} value={zoneId}>
+                  {zoneName as string}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t("login.school")} *
             </label>
+
             <select
               value={teacherInfo.school}
               onChange={(e) =>
@@ -119,13 +172,42 @@ export default function LoginForm() {
                   school: e.target.value,
                 }))
               }
+              className="w-full px-3 py-2 border border-gray-300 rounded-md 
+                     focus:outline-none focus:ring-2 focus:ring-[#82A4DE] 
+                     text-sm sm:text-base text-gray-900 bg-white"
+              required
+              disabled={!teacherInfo.zone}
+            >
+              <option value="">{t("login.selectSchool")}</option>
+
+              {schoolOptions.map((schoolId: string) => (
+                <option key={schoolId} value={schoolId}>
+                  {data.schools[schoolId]} {/* translated label */}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("login.section")} *
+            </label>
+            <select
+              value={teacherInfo.section}
+              onChange={(e) =>
+                setTeacherInfo((prev) => ({
+                  ...prev,
+                  section: e.target.value,
+                }))
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
               required
             >
-              <option value="">{t("login.selectSchool")}</option>
-              {schoolOptions.map((school) => (
-                <option key={school} value={school}>
-                  {school}
+              <option value="">{t("login.selectSection")}</option>
+              {sectionOptions.map((section) => (
+                <option key={section} value={section}>
+                  {section}
                 </option>
               ))}
             </select>

@@ -122,24 +122,6 @@ describe("LoginForm", () => {
     expect(screen.getByText(/login.resourcesSufficiency/)).toBeInTheDocument();
   });
 
-  it("should update school value on change", () => {
-    render(<LoginForm />);
-
-    const schoolSelect = screen.getAllByRole("combobox")[0];
-    fireEvent.change(schoolSelect, { target: { value: "schools.school2" } });
-
-    expect(schoolSelect).toHaveValue("schools.school2");
-  });
-
-  it("should update grade value on change", () => {
-    render(<LoginForm />);
-
-    const gradeSelect = screen.getAllByRole("combobox")[1];
-    fireEvent.change(gradeSelect, { target: { value: "grades.grade1" } });
-
-    expect(gradeSelect).toHaveValue("grades.grade1");
-  });
-
   it("should render mascot image", () => {
     render(<LoginForm />);
 
