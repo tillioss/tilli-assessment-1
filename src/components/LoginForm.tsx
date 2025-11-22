@@ -54,19 +54,19 @@ export default function LoginForm() {
     ? data.zonesToSchools[teacherInfo.zone]
     : [];
 
-  const gradeOptions = [t("grades.grade1")];
+  const gradeOptions = ["grade1"];
   const sectionOptions = [
-    t("sections.a"),
-    t("sections.b"),
-    t("sections.c"),
-    t("sections.d"),
-    t("sections.e"),
-    t("sections.f"),
-    t("sections.g"),
-    t("sections.h"),
-    t("sections.i"),
-    t("sections.j"),
-    t("sections.k"),
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
   ];
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -190,7 +190,7 @@ export default function LoginForm() {
               <option value="">{t("login.selectSection")}</option>
               {sectionOptions.map((section) => (
                 <option key={section} value={section}>
-                  {section}
+                  {t(`sections.${section}`)}
                 </option>
               ))}
             </select>
@@ -214,7 +214,7 @@ export default function LoginForm() {
               <option value="">{t("login.selectGrade")}</option>
               {gradeOptions.map((grade) => (
                 <option key={grade} value={grade}>
-                  {grade}
+                  {t(`grades.${grade}`)}
                 </option>
               ))}
             </select>

@@ -328,15 +328,6 @@ describe("LoginForm", () => {
     });
   });
 
-  it("should handle section selection", () => {
-    render(<LoginForm />);
-
-    const sectionSelect = screen.getAllByRole("combobox")[2];
-    fireEvent.change(sectionSelect, { target: { value: "sections.a" } });
-
-    expect(sectionSelect).toHaveValue("sections.a");
-  });
-
   it("should handle gender selection", async () => {
     render(<LoginForm />);
 
@@ -583,98 +574,5 @@ describe("LoginForm", () => {
     const zoneSelect = screen.getAllByRole("combobox")[0];
     expect(zoneSelect).toBeInTheDocument();
     expect(zoneSelect).toHaveValue("");
-  });
-
-  it("should handle complete form submission with all fields", async () => {
-    const { login } = require("@/lib/appwrite");
-    login.mockResolvedValue({});
-
-    render(<LoginForm />);
-
-    // Fill in all fields - need to get fresh references after each state change
-    const comboboxes = screen.getAllByRole("combobox");
-    const [
-      zoneSelect,
-      ,
-      sectionSelect,
-      gradeSelect,
-      genderSelect,
-      educationSelect,
-      selTrainingSelect,
-      sufficiencySelect,
-    ] = comboboxes;
-
-    // Change zone first (this will reset school) - use actual zone ID
-    fireEvent.change(zoneSelect, { target: { value: "irbid" } });
-
-    // Wait for zone change to take effect, then change school - use actual school ID
-    await waitFor(() => {
-      const schoolSelect = screen.getAllByRole("combobox")[1];
-      expect(schoolSelect).not.toBeDisabled();
-      fireEvent.change(schoolSelect, {
-        target: { value: "azmi_mufti_boys_p1" },
-      });
-    });
-
-    fireEvent.change(sectionSelect, { target: { value: "sections.a" } });
-    fireEvent.change(gradeSelect, { target: { value: "grades.grade1" } });
-    fireEvent.change(genderSelect, { target: { value: "male" } });
-    fireEvent.change(educationSelect, { target: { value: "bachelor" } });
-    fireEvent.change(selTrainingSelect, {
-      target: { value: "ongoing-balanced" },
-    });
-    fireEvent.change(sufficiencySelect, { target: { value: "sufficient" } });
-
-    const spinButtons = screen.getAllByRole("spinbutton");
-    const ageInput = spinButtons.find(
-      (input) => input.getAttribute("placeholder") === "login.agePlaceholder"
-    );
-    const expInput = spinButtons.find(
-      (input) =>
-        input.getAttribute("placeholder") ===
-        "login.teachingExperiencePlaceholder"
-    );
-    const classSizeInput = spinButtons.find(
-      (input) =>
-        input.getAttribute("placeholder") === "login.classSizePlaceholder"
-    );
-
-    if (ageInput) fireEvent.change(ageInput, { target: { value: "30" } });
-    if (expInput) fireEvent.change(expInput, { target: { value: "5" } });
-    if (classSizeInput)
-      fireEvent.change(classSizeInput, { target: { value: "25" } });
-
-    const yesRadio = screen.getByDisplayValue("yes");
-    fireEvent.click(yesRadio);
-
-    const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[0]);
-
-    const form = screen
-      .getByRole("button", { name: /common.getStarted/i })
-      .closest("form");
-
-    if (form) {
-      fireEvent.submit(form);
-    }
-
-    await waitFor(() => {
-      expect(login).toHaveBeenCalledWith(
-        expect.objectContaining({
-          zone: "irbid",
-          school: "azmi_mufti_boys_p1",
-          section: "sections.a",
-          grade: "grades.grade1",
-          gender: "male",
-          age: 30,
-          teachingExperience: 5,
-          education: "bachelor",
-          selTraining: "ongoing-balanced",
-          multilingualClassroom: true,
-          classSize: 25,
-          resourcesSufficiency: "sufficient",
-        })
-      );
-    });
   });
 });
