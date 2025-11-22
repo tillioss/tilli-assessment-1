@@ -77,7 +77,8 @@ export default function EditAssessmentModal({
       try {
         const answers = JSON.parse(assessment.answers);
         const student: Student = {
-          emoji: "👤", // Use a consistent emoji to avoid hydration issues
+          emoji: "👤",
+          studentName: assessment.studentName || "",
           q1Answer: answers[0] || "",
           q2Answer: answers[1] || "",
           q3Answer: answers[2] || "",
@@ -91,7 +92,7 @@ export default function EditAssessmentModal({
           q11Answer: answers[10] || "",
         };
         setEditingStudent(student);
-        setOriginalStudent(student); // Store original data for comparison
+        setOriginalStudent(student);
       } catch (error) {
         console.error("Error parsing assessment data for editing:", error);
       }
@@ -139,6 +140,7 @@ export default function EditAssessmentModal({
 
       const assessmentData = {
         teacherId: teacherId,
+        studentName: editingStudent.studentName || "",
         scores: JSON.stringify(questionScores),
         answers: JSON.stringify([
           editingStudent.q1Answer,
@@ -239,6 +241,20 @@ export default function EditAssessmentModal({
 
         {/* Modal Content */}
         <div className="p-6">
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("manualEntry.studentName")}
+            </label>
+            <input
+              type="text"
+              value={editingStudent.studentName}
+              onChange={(e) =>
+                updateEditingStudent("studentName", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
+              required
+            />
+          </div>
           <div className="border border-gray-200 rounded-lg p-6 mb-6">
             {/* Assessment Criteria */}
             <div className="space-y-6">

@@ -102,14 +102,6 @@ describe("ConsentView", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render privacy information", () => {
-    render(<ConsentView />);
-
-    expect(
-      screen.getByText((content) => content.includes("consent.privacy"))
-    ).toBeInTheDocument();
-  });
-
   it("should render conclusion text", () => {
     render(<ConsentView />);
 

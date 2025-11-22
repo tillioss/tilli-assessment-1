@@ -6,13 +6,18 @@ import { TeacherInfo } from "@/types";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { login } from "@/lib/appwrite";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import i18n from "@/lib/i18n";
 import enData from "@/locales/en.json";
 import arData from "@/locales/ar.json";
 
 export default function LoginForm() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const testType = searchParams.get("testType") || "PRE";
+  const queryString = testType
+    ? `?testType=${encodeURIComponent(testType)}`
+    : "";
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -51,17 +56,17 @@ export default function LoginForm() {
 
   const gradeOptions = [t("grades.grade1")];
   const sectionOptions = [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
+    t("sections.a"),
+    t("sections.b"),
+    t("sections.c"),
+    t("sections.d"),
+    t("sections.e"),
+    t("sections.f"),
+    t("sections.g"),
+    t("sections.h"),
+    t("sections.i"),
+    t("sections.j"),
+    t("sections.k"),
   ];
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -69,30 +74,9 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
     try {
-      // Get English translations for school and grade
-      const getEnglishValue = (currentValue: string, prefix: string) => {
-        // Find the translation key by checking which key matches the current value
-        const keys =
-          prefix === "schools" ? ["school1", "school2", "school3"] : ["grade1"];
-        for (const key of keys) {
-          if (t(`${prefix}.${key}`) === currentValue) {
-            // Get the English translation
-            return i18n.t(`${prefix}.${key}`, { lng: "en" });
-          }
-        }
-        return currentValue; // fallback to current value
-      };
+      await login(teacherInfo);
 
-      const gradeEn = getEnglishValue(teacherInfo.grade, "grades");
-
-      await login({ ...teacherInfo, grade: gradeEn });
-
-      // Navigate with query params
-      router.push(
-        `/dashboard?school=${encodeURIComponent(
-          teacherInfo.school
-        )}&grade=${encodeURIComponent(gradeEn)}`
-      );
+      router.push(`/dashboard${queryString}`);
     } catch (error) {
       console.error("Login error:", error);
       setError(t("login.loginFailed"));
@@ -103,7 +87,6 @@ export default function LoginForm() {
 
   return (
     <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg relative">
-      {/* Mascot above title */}
       <div className="flex justify-center mb-4">
         <Image
           src="/images/mascot/tilli.png"

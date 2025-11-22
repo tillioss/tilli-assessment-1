@@ -55,12 +55,15 @@ function ManualEntryContent() {
   const testType = searchParams.get("testType") || "PRE";
   const school = searchParams.get("school") || "test";
   const grade = searchParams.get("grade") || "test";
+  const section = searchParams.get("section") || "test";
+  const zone = searchParams.get("zone") || "test";
   const { setBackButton, hideBackButton } = useNavbar();
   const { t } = useTranslation();
   const rubricData = useRubricData();
 
   const [students, setStudents] = useState<Student[]>([
     {
+      studentName: "",
       emoji: "👤",
       q1Answer: "",
       q2Answer: "",
@@ -86,7 +89,7 @@ function ManualEntryContent() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   useEffect(() => {
-    setBackButton("/dashboard", t("common.back"));
+    setBackButton(`/dashboard?testType=${testType}`, t("common.back"));
     return () => hideBackButton();
   }, [setBackButton, hideBackButton, t]);
 
@@ -157,9 +160,9 @@ function ManualEntryContent() {
 
   const getStudentStatusText = (student: Student) => {
     if (isStudentFullyGraded(student)) {
-      return "✓ Fully graded";
+      return t("manualEntry.fullyGraded");
     }
-    return "⚠ Incomplete";
+    return t("manualEntry.incomplete");
   };
 
   const getStudentStatusColor = (student: Student) => {
@@ -192,6 +195,7 @@ function ManualEntryContent() {
   const resetForm = () => {
     setStudents([
       {
+        studentName: "",
         emoji: "👤",
         q1Answer: "",
         q2Answer: "",
@@ -247,6 +251,7 @@ function ManualEntryContent() {
 
         const assessmentData: AssessmentRecord = {
           teacherId: currentUser || "",
+          studentName: student.studentName,
           scores: JSON.stringify(questionScores),
           overallScore: overallScore,
           skillScores: JSON.stringify(skillScores),
@@ -272,6 +277,8 @@ function ManualEntryContent() {
           skillScores: skillScores,
           school: school,
           grade: grade,
+          section: section,
+          zone: zone,
           assessment: "teacher_report",
           overallScore: overallScore,
           testType: testType,
@@ -301,6 +308,7 @@ function ManualEntryContent() {
         const answers = JSON.parse(assessment.answers);
         return {
           $id: assessment.$id,
+          studentName: assessment.studentName,
           emoji: "👤",
           q1Answer: answers[0] || "",
           q2Answer: answers[1] || "",
@@ -361,7 +369,7 @@ function ManualEntryContent() {
                             <span className="text-xl">{student.emoji}</span>
                             <div>
                               <h5 className="font-medium text-gray-900 text-xs">
-                                Student {studentIndex + 1}
+                                {student.studentName}
                               </h5>
                               <span
                                 className={`text-xs font-medium px-2 py-1 rounded-full ${getStudentStatusColor(
@@ -451,7 +459,7 @@ function ManualEntryContent() {
                   </div>
                   <div className="text-center">
                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                      {`${parseInt(rating) + 1} Star`}
+                      {`${parseInt(rating) + 1} ${t("manualEntry.star")}`}
                     </div>
                     <div className="text-sm font-medium text-gray-900 leading-tight">
                       {description}
@@ -485,6 +493,21 @@ function ManualEntryContent() {
                     {t("manualEntry.remove")}
                   </button>
                 )}
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("manualEntry.studentName")}
+                </label>
+                <input
+                  type="text"
+                  value={student.studentName}
+                  onChange={(e) =>
+                    updateStudent(studentIndex, "studentName", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#82A4DE] text-sm sm:text-base text-gray-900 bg-white"
+                  required
+                />
               </div>
 
               {/* Assessment Criteria */}

@@ -107,6 +107,7 @@
       "cta": "Start AI Scan →"
     },
     "manualEntry": {
+      "star": "Star",
       "title": "Manual Entry",
       "description": "Enter student assessment data manually using the rubric form",
       "cta": "Fill form manually →"
@@ -118,7 +119,15 @@
   "sections": {
     "a": "A",
     "b": "B",
-    "c": "C"
+    "c": "C",
+    "d": "D",
+    "e": "E",
+    "f": "F",
+    "g": "G",
+    "h": "H",
+    "i": "I",
+    "j": "J",
+    "k": "K"
   },
   "uploadPhotos": {
     "title": "Upload Rubric Photos",
@@ -167,6 +176,7 @@
     "changeLanguage": "Change language"
   },
   "manualEntry": {
+    "star": "Star",
     "savedAssessments": "Saved Assessments",
     "noSavedAssessments": "No saved assessments found. Add your first student below.",
     "loadingAssessments": "Loading assessments...",
@@ -199,7 +209,8 @@
     "confidentiality": "Confidentiality:",
     "privacy": "All identifiable student data (i.e: name) collected will be **anonymized** before analysis and dissemination. No personally identifiable information (such as student or parent names) will be stored or shared.",
     "conclusion": "Your observations play a vital role in building a deeper understanding of how students develop social-emotional skills, and in shaping evidence-based practices that benefit all learners.",
-    "understand": "I Understand"
+    "understand": "I Understand",
+    "privacyPolicy": "Read more about our <u><a href='https://www.tillikids.com/privacypolicy'>Privacy Policy</a></u> here."
   },
   "rubric": {
     "ratingLevels": {

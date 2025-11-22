@@ -68,6 +68,11 @@ export default function ConsentView({ onConsentGiven }: ConsentViewProps) {
             {t("consent.understand")}
           </button>
         </div>
+
+        <div
+          className="mt-12 text-black"
+          dangerouslySetInnerHTML={{ __html: t("consent.privacyPolicy") }}
+        />
       </div>
     </div>
   );

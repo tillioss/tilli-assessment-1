@@ -1,32 +1,33 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Sparkles, Camera, FileText } from "lucide-react";
+import { Sparkles, Camera } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 function Dashboard() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
+  const locale = i18n.language;
+  const isRTL = locale === "ar";
 
-  const school = searchParams.get("school") || "";
-  const grade = searchParams.get("grade") || "";
-  const queryString =
-    school && grade
-      ? `?school=${encodeURIComponent(school)}&grade=${encodeURIComponent(
-          grade
-        )}`
-      : "";
-
+  const testType = searchParams.get("testType") || "PRE";
+  const queryString = testType
+    ? `?testType=${encodeURIComponent(testType)}`
+    : "";
   return (
-    <div className="min-h-screen bg-[#E1ECFF]">
+    <div
+      className={`min-h-screen bg-[#E1ECFF] ${
+        isRTL ? "text-right" : "text-left"
+      }`}
+      dir={isRTL ? "rtl" : "ltr"}
+    >
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="text-center mb-8 sm:mb-12">
+        <div className={`text-center mb-8 sm:mb-12`}>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
             {t("dashboard.title")}
           </h2>
@@ -98,9 +99,6 @@ function Dashboard() {
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-gray-500 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center">
-                      <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                    </div>
                     <div>
                       <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                         {t("dashboard.manualEntry.title")}

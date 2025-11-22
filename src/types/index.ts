@@ -1,4 +1,5 @@
 export interface Student {
+  studentName: string;
   emoji: string;
   q1Answer: string;
   q2Answer: string;
@@ -49,6 +50,7 @@ export interface AssessmentRecord {
   answers: string;
   scores: string;
   overallScore: number;
+  studentName: string;
   skillScores: string;
   isManualEntry: boolean;
   testType: string;

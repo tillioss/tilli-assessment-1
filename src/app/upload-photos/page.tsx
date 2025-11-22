@@ -291,6 +291,7 @@ function UploadPhotosContent() {
         // Convert StudentAssessment to Student format for calculation
         const studentForCalculation: Student = {
           emoji: student.emoji || "👤",
+          studentName: student.studentName || "",
           q1Answer: student.q1Answer || "",
           q2Answer: student.q2Answer || "",
           q3Answer: student.q3Answer || "",
@@ -328,6 +329,7 @@ function UploadPhotosContent() {
 
         const assessmentData = {
           teacherId: currentUser?.$id || "",
+          studentName: student.studentName || "",
           scores: JSON.stringify(questionScores),
           answers: JSON.stringify([
             student.q1Answer,

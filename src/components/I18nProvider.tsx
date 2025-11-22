@@ -21,11 +21,12 @@ export default function I18nProvider({ children }: I18nProviderProps) {
     }
   }, []);
 
-  // Handle language query parameter globally
   useEffect(() => {
     const langParam = searchParams.get("lang");
     if (langParam && (langParam === "en" || langParam === "ar")) {
       i18n.changeLanguage(langParam);
+      document.documentElement.dir = langParam === "ar" ? "rtl" : "ltr";
+      document.documentElement.lang = langParam;
     }
   }, [searchParams]);
 
